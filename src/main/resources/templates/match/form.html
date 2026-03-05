@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <nav th:replace="~{layout :: nav}"></nav>
+    <div class="container">
+        <h1>Nouveau Match</h1>
+        <div class="card">
+            <form action="/matchs" method="post">
+                <div class="form-group">
+                    <label>Equipe Domicile</label>
+                    <select name="domId" required>
+                        <option th:each="e : ${equipes}"
+                                th:value="${e.id}"
+                                th:text="${e.nom} + ' (Groupe ' + ${e.groupe.nom} + ')'">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Equipe Extérieur</label>
+                    <select name="extId" required>
+                        <option th:each="e : ${equipes}"
+                                th:value="${e.id}"
+                                th:text="${e.nom} + ' (Groupe ' + ${e.groupe.nom} + ')'">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date du Match</label>
+                    <input type="date" name="dateMatch" required/>
+                </div>
+                <div class="form-group">
+                    <label>Lieu</label>
+                    <input type="text" name="lieu"/>
+                </div>
+                <div class="form-group">
+                    <label>Phase</label>
+                    <select name="phase" required>
+                        <option th:each="p : ${phases}"
+                                th:value="${p}"
+                                th:text="${p}">
+                        </option>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="/matchs" class="btn btn-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

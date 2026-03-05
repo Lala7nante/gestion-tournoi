@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <nav th:replace="~{layout :: nav}"></nav>
+    <div class="container">
+        <div class="header-row">
+            <h1>Equipes</h1>
+            <a href="/equipes/new" class="btn btn-primary">+ Ajouter Equipe</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Ville</th>
+                    <th>Coach</th>
+                    <th>Groupe</th>
+                    <th>Tournoi</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="e, i : ${equipes}">
+                    <td th:text="${i.count}"></td>
+                    <td th:text="${e.nom}"></td>
+                    <td th:text="${e.ville}"></td>
+                    <td th:text="${e.coach}"></td>
+                    <td th:text="'Groupe ' + ${e.groupe.nom}"></td>
+                    <td th:text="${e.groupe.tournoi.nom}"></td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{/equipes/{id}/edit(id=${e.id})}" class="btn btn-warning">Modifier</a>
+                            <a th:href="@{/equipes/{id}/delete(id=${e.id})}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Hamafa ve?')">Supprimer</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <nav th:replace="~{layout :: nav}"></nav>
+    <div class="container">
+        <h1>Dashboard</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number" th:text="${nbTournois}">0</div>
+                <div class="label">Tournois</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" th:text="${nbGroupes}">0</div>
+                <div class="label">Groupes</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" th:text="${nbEquipes}">0</div>
+                <div class="label">Equipes</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" th:text="${nbJoueurs}">0</div>
+                <div class="label">Joueurs</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" th:text="${nbMatchs}">0</div>
+                <div class="label">Matchs</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

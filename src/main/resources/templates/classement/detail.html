@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <nav th:replace="~{layout :: nav}"></nav>
+    <div class="container">
+        <h1>Classement</h1>
+
+        <div th:if="${#lists.isEmpty(tournois)}" class="empty-state">
+            Tsy misy tournoi mbola.
+        </div>
+
+        <div th:each="t : ${tournois}" class="card" style="margin-bottom:1rem">
+            <div class="header-row">
+                <h2 th:text="${t.nom}"></h2>
+            </div>
+            <div th:each="g : ${t.groupes}">
+                <a th:href="@{/groupes/{id}/classement(id=${g.id})}"
+                   class="btn btn-primary"
+                   th:text="'Groupe ' + ${g.nom}">
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

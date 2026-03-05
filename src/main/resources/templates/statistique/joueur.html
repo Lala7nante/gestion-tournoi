@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Statistiques Joueur</title></head>
+<body>
+<div class="container">
+    <h1>📈 Stats — <span th:text="${joueur.prenom} + ' ' + ${joueur.nom}"></span></h1>
+    <p style="color:#666;margin-bottom:1.5rem"
+       th:text="${joueur.equipe.nom} + ' · ' + ${joueur.poste}"></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Match</th>
+                <th>⚽ Buts</th>
+                <th>🎯 Passes</th>
+                <th>🟡 C.Jaune</th>
+                <th>🔴 C.Rouge</th>
+                <th>⏱️ Minutes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="s : ${statistiques}">
+                <td th:text="${s.match.equipeDomicile.nom} + ' vs ' + ${s.match.equipeExterieur.nom}"></td>
+                <td th:text="${s.buts}" style="color:#00ff87;font-weight:700"></td>
+                <td th:text="${s.passesDecisives}"></td>
+                <td th:text="${s.cartonsJaunes}" style="color:#ff9f1c"></td>
+                <td th:text="${s.cartonsRouges}" style="color:#ff3b3b"></td>
+                <td th:text="${s.minutesJouees}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Statistique Form</title></head>
+<body>
+<div class="container">
+    <h1>+ Ajouter Statistique</h1>
+    <div class="card">
+        <form action="/statistiques" method="post" th:object="${statistique}">
+            <div class="form-group">
+                <label>Joueur</label>
+                <select name="joueurId" required>
+                    <option th:each="j : ${joueurs}" th:value="${j.id}"
+                            th:text="${j.prenom} + ' ' + ${j.nom} + ' (' + ${j.equipe.nom} + ')'"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Match</label>
+                <select name="matchId" required>
+                    <option th:each="m : ${matchs}" th:value="${m.id}"
+                            th:text="${m.equipeDomicile.nom} + ' vs ' + ${m.equipeExterieur.nom}"></option>
+                </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                <div class="form-group">
+                    <label>⚽ Buts</label>
+                    <input type="number" th:field="*{buts}" min="0" value="0"/>
+                </div>
+                <div class="form-group">
+                    <label>🎯 Passes Décisives</label>
+                    <input type="number" th:field="*{passesDecisives}" min="0" value="0"/>
+                </div>
+                <div class="form-group">
+                    <label>🟡 Cartons Jaunes</label>
+                    <input type="number" th:field="*{cartonsJaunes}" min="0" value="0"/>
+                </div>
+                <div class="form-group">
+                    <label>🔴 Cartons Rouges</label>
+                    <input type="number" th:field="*{cartonsRouges}" min="0" value="0"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>⏱️ Minutes Jouées</label>
+                <input type="number" th:field="*{minutesJouees}" min="0" max="120" value="90"/>
+            </div>
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a href="/matchs" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

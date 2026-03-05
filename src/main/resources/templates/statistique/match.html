@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head}"></head>
+<body>
+    <nav th:replace="~{layout :: nav}"></nav>
+    <div class="container">
+        <div class="header-row">
+            <h1>Stats — <span th:text="${match.equipeDomicile.nom}"></span>
+                vs <span th:text="${match.equipeExterieur.nom}"></span>
+            </h1>
+            <div class="actions">
+                <a th:href="@{/statistiques/new}" class="btn btn-primary">+ Ajouter</a>
+                <a href="/statistiques" class="btn btn-secondary">← Retour</a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(statistiques)}" class="empty-state">
+            Tsy misy statistique mbola.
+        </div>
+
+        <table th:unless="${#lists.isEmpty(statistiques)}">
+            <thead>
+                <tr>
+                    <th>Joueur</th>
+                    <th>Equipe</th>
+                    <th>⚽ Buts</th>
+                    <th>🎯 Passes</th>
+                    <th>🟡 C.Jaune</th>
+                    <th>🔴 C.Rouge</th>
+                    <th>⏱️ Min</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s : ${statistiques}">
+                    <td th:text="${s.joueur.prenom} + ' ' + ${s.joueur.nom}"></td>
+                    <td th:text="${s.joueur.equipe.nom}"></td>
+                    <td th:text="${s.buts}" style="color:#00c8ff;font-weight:700"></td>
+                    <td th:text="${s.passesDecisives}"></td>
+                    <td th:text="${s.cartonsJaunes}" style="color:#5ab4ff"></td>
+                    <td th:text="${s.cartonsRouges}" style="color:#ff6b8a"></td>
+                    <td th:text="${s.minutesJouees}"></td>
+                    <td>
+                        <a th:href="@{/statistiques/{id}/delete(id=${s.id},matchId=${match.id})}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Hamafa ve?')">Supprimer</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

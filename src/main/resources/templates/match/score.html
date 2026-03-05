@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Score</title></head>
+<body>
+<div class="container">
+    <h1>⚽ Enregistrer Score</h1>
+    <div class="card">
+        <h2 style="text-align:center;margin-bottom:2rem">
+            <span th:text="${match.equipeDomicile.nom}"></span>
+            <span style="color:#666;margin:0 1rem">vs</span>
+            <span th:text="${match.equipeExterieur.nom}"></span>
+        </h2>
+
+        <form th:action="@{/matchs/{id}/score(id=${match.id})}" method="post">
+
+            <h2 style="color:#666;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">SCORE 90 MIN</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+                <div class="form-group">
+                    <label th:text="${match.equipeDomicile.nom}"></label>
+                    <input type="number" name="scoreDom" min="0" value="0" required/>
+                </div>
+                <div class="form-group">
+                    <label th:text="${match.equipeExterieur.nom}"></label>
+                    <input type="number" name="scoreExt" min="0" value="0" required/>
+                </div>
+            </div>
+
+            <!-- Prolongation (Phase Eliminatoire) -->
+            <div th:if="${match.phase.name() != 'GROUPE'}" style="margin-bottom:1.5rem">
+                <div class="form-group">
+                    <label style="color:#ff9f1c">
+                        <input type="checkbox" name="prolongation" value="true" id="chkProl"
+                               onchange="document.getElementById('prolSection').style.display=this.checked?'block':'none'"/>
+                        Prolongation?
+                    </label>
+                </div>
+                <div id="prolSection" style="display:none">
+                    <h2 style="color:#ff9f1c;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">SCORE PROLONGATION</h2>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+                        <div class="form-group">
+                            <label th:text="${match.equipeDomicile.nom}"></label>
+                            <input type="number" name="scoreProlDom" min="0" value="0"/>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="${match.equipeExterieur.nom}"></label>
+                            <input type="number" name="scoreProlExt" min="0" value="0"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:#ff3b3b">
+                            <input type="checkbox" name="penalty" value="true" id="chkPen"
+                                   onchange="document.getElementById('penSection').style.display=this.checked?'block':'none'"/>
+                            Penalty?
+                        </label>
+                    </div>
+                    <div id="penSection" style="display:none">
+                        <h2 style="color:#ff3b3b;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">SCORE PENALTY</h2>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                            <div class="form-group">
+                                <label th:text="${match.equipeDomicile.nom}"></label>
+                                <input type="number" name="scorePenDom" min="0" value="0"/>
+                            </div>
+                            <div class="form-group">
+                                <label th:text="${match.equipeExterieur.nom}"></label>
+                                <input type="number" name="scorePenExt" min="0" value="0"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">✅ Confirmer Score</button>
+                <a href="/matchs" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
