@@ -27,4 +27,7 @@ public class Statistique {
     private int cartonsJaunes = 0;
     private int cartonsRouges = 0;
     private int minutesJouees = 0;
+
+    // ✅ Minute(s) des buts ex: "34', 67'"
+    private String minutesButs = "";
 }

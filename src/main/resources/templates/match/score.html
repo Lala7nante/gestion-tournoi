@@ -14,6 +14,7 @@
 
         <form th:action="@{/matchs/{id}/score(id=${match.id})}" method="post">
 
+            <!-- SCORE 90 MIN -->
             <h2 style="color:#666;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">SCORE 90 MIN</h2>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
                 <div class="form-group">
@@ -26,8 +27,69 @@
                 </div>
             </div>
 
-            <!-- Prolongation (Phase Eliminatoire) -->
-            <div th:if="${match.phase.name() != 'GROUPE'}" style="margin-bottom:1.5rem">
+            <!-- STATS PAR EQUIPE -->
+            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">STATISTIQUES DU MATCH</h2>
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1.5rem">
+
+                <!-- Labels centre -->
+                <div></div>
+                <div style="display:flex;flex-direction:column;gap:0.8rem;text-align:center">
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🎯 Tirs</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🎯 Tirs Cadrés</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">⚽ Possession (%)</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🔄 Passes</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">⚠️ Fautes</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🟡 Cartons Jaunes</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🔴 Cartons Rouges</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🔲 Corners</span>
+                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🚩 Hors-Jeu</span>
+                </div>
+                <div></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:start">
+                <!-- Domicile -->
+                <div style="display:flex;flex-direction:column;gap:0.8rem">
+                    <input type="number" name="tirsDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="tirsCadresDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="possessionDomicile" min="0" max="100" value="50" style="text-align:center"/>
+                    <input type="number" name="passesDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="fautesDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="cartonsJaunesDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="cartonsRougesDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="cornersDomicile" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="horsJeuDomicile" min="0" value="0" style="text-align:center"/>
+                </div>
+
+                <!-- Labels centre -->
+                <div style="display:flex;flex-direction:column;gap:0.8rem;text-align:center;padding-top:0.5rem">
+                    <span style="color:#00c8ff;font-size:0.8rem">🎯 Tirs</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">🎯 Tirs Cadrés</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">⚽ Possession</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">🔄 Passes</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">⚠️ Fautes</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">🟡 C.Jaunes</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">🔴 C.Rouges</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">🔲 Corners</span>
+                    <span style="color:#00c8ff;font-size:0.8rem">🚩 Hors-Jeu</span>
+                </div>
+
+                <!-- Extérieur -->
+                <div style="display:flex;flex-direction:column;gap:0.8rem">
+                    <input type="number" name="tirsExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="tirsCadresExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="possessionExterieur" min="0" max="100" value="50" style="text-align:center"/>
+                    <input type="number" name="passesExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="fautesExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="cartonsJaunesExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="cartonsRougesExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="cornersExterieur" min="0" value="0" style="text-align:center"/>
+                    <input type="number" name="horsJeuExterieur" min="0" value="0" style="text-align:center"/>
+                </div>
+            </div>
+
+            <!-- PROLONGATION -->
+            <div th:if="${match.phase.name() != 'GROUPE'}" style="margin:1.5rem 0">
                 <div class="form-group">
                     <label style="color:#ff9f1c">
                         <input type="checkbox" name="prolongation" value="true" id="chkProl"
@@ -47,7 +109,6 @@
                             <input type="number" name="scoreProlExt" min="0" value="0"/>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label style="color:#ff3b3b">
                             <input type="checkbox" name="penalty" value="true" id="chkPen"
@@ -72,7 +133,7 @@
             </div>
 
             <div class="actions">
-                <button type="submit" class="btn btn-primary">✅ Confirmer Score</button>
+                <button type="submit" class="btn btn-primary">Confirmer</button>
                 <a th:href="@{/matchs}" class="btn btn-secondary">Annuler</a>
             </div>
         </form>

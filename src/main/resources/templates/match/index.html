@@ -2,66 +2,77 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-    <nav th:replace="~{layout :: nav}"></nav>
-    <div class="container">
-        <div class="header-row">
-            <h1>Matchs</h1>
-            <a href="/matchs/new" class="btn btn-primary">+ Nouveau Match</a>
-        </div>
-
-        <div th:if="${#lists.isEmpty(matchs)}" class="empty-state">
-            Aucun match pour le moment.
-        </div>
-
-        <table th:unless="${#lists.isEmpty(matchs)}">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Domicile</th>
-                    <th>Score</th>
-                    <th>Extérieur</th>
-                    <th>Date</th>
-                    <th>Phase</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="m, i : ${matchs}">
-                    <td th:text="${i.count}"></td>
-                    <td th:text="${m.equipeDomicile.nom}"></td>
-                    <td>
-                        <span th:if="${m.statut.name() == 'TERMINE'}"
-                              th:text="${m.scoreDomicile} + ' - ' + ${m.scoreExterieur}"
-                              style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#00c8ff">
-                        </span>
-                        <span th:unless="${m.statut.name() == 'TERMINE'}"
-                              style="color:#5a7aa8">vs</span>
-                    </td>
-                    <td th:text="${m.equipeExterieur.nom}"></td>
-                    <td th:text="${m.dateMatch}"></td>
-                    <td>
-                        <span class="badge badge-blue" th:text="${m.phase}"></span>
-                    </td>
-                    <td>
-                        <span class="badge"
-                              th:classappend="${m.statut.name() == 'TERMINE'} ? 'badge-cyan' : 'badge-blue'"
-                              th:text="${m.statut}">
-                        </span>
-                    </td>
-                    <td>
-                        <div class="actions">
-                            <a th:if="${m.statut.name() == 'PREVU'}"
-                               th:href="@{/matchs/{id}/score(id=${m.id})}"
-                               class="btn btn-primary">Score</a>
-                            <a th:href="@{/matchs/{id}/delete(id=${m.id})}"
-                               class="btn btn-danger"
-                               onclick="return confirm('Hamafa ve?')">Supprimer</a>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+<nav th:replace="~{layout :: nav}"></nav>
+<div class="container">
+    <div class="header-row">
+        <h1>⚽ Matchs</h1>
+        <a href="/matchs/new" class="btn btn-primary">+ Nouveau Match</a>
     </div>
+
+    <div th:if="${errorMessage}" class="badge badge-red"
+         style="padding:1rem;margin-bottom:1rem;display:block;font-size:1rem">
+        ⚠️ <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(matchs)}" class="empty-state">
+        Aucun match pour le moment.
+    </div>
+
+    <table th:unless="${#lists.isEmpty(matchs)}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Domicile</th>
+                <th>Score</th>
+                <th>Extérieur</th>
+                <th>Date</th>
+                <th>Phase</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="m, i : ${matchs}">
+                <td th:text="${i.count}"></td>
+                <td th:text="${m.equipeDomicile.nom}"></td>
+                <td>
+                    <span th:if="${m.statut.name() == 'TERMINE'}"
+                          th:text="${m.scoreDomicile} + ' - ' + ${m.scoreExterieur}"
+                          style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#00c8ff">
+                    </span>
+                    <span th:unless="${m.statut.name() == 'TERMINE'}"
+                          style="color:#5a7aa8">vs</span>
+                </td>
+                <td th:text="${m.equipeExterieur.nom}"></td>
+                <td th:text="${m.dateMatch}"></td>
+                <td>
+                    <span class="badge badge-blue" th:text="${m.phase}"></span>
+                </td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${m.statut.name() == 'TERMINE'} ? 'badge-cyan' : 'badge-blue'"
+                          th:text="${m.statut}">
+                    </span>
+                </td>
+                <td>
+                    <div class="actions" style="display:flex;flex-wrap:nowrap;gap:0.5rem">
+                        <!-- Score — PREVU moana -->
+                        <a th:if="${m.statut.name() == 'PREVU'}"
+                           th:href="@{/matchs/{id}/score(id=${m.id})}"
+                           class="btn btn-primary">Score</a>
+                        <!-- ✅ Stats — TERMINE moana -->
+                        <a th:if="${m.statut.name() == 'TERMINE'}"
+                           th:href="@{/statistiques/match/{id}(id=${m.id})}"
+                           class="btn btn-secondary">Stats</a>
+                        <!-- Supprimer -->
+                        <a th:href="@{/matchs/{id}/delete(id=${m.id})}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Voulez-vous supprimer ce match ?')">Supprimer</a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

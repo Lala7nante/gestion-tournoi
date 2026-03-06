@@ -48,6 +48,28 @@ public class MatchFootball {
     @Enumerated(EnumType.STRING)
     private Statut statut = Statut.PREVU;
 
+    // ✅ Stats équipe Domicile
+    private int tirsDomicile = 0;
+    private int tirsCadresDomicile = 0;
+    private int possessionDomicile = 50;
+    private int passesDomicile = 0;
+    private int fautesDomicile = 0;
+    private int cartonsJaunesDomicile = 0;
+    private int cartonsRougesDomicile = 0;
+    private int cornersDomicile = 0;
+    private int horsJeuDomicile = 0;
+
+    // ✅ Stats équipe Extérieur
+    private int tirsExterieur = 0;
+    private int tirsCadresExterieur = 0;
+    private int possessionExterieur = 50;
+    private int passesExterieur = 0;
+    private int fautesExterieur = 0;
+    private int cartonsJaunesExterieur = 0;
+    private int cartonsRougesExterieur = 0;
+    private int cornersExterieur = 0;
+    private int horsJeuExterieur = 0;
+
     public enum Phase {
         GROUPE, ROUND_16, QUART, DEMI, TROISIEME, FINALE
     }
