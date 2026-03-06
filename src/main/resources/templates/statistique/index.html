@@ -2,39 +2,42 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-    <nav th:replace="~{layout :: nav}"></nav>
-    <div class="container">
-        <h1>Statistiques</h1>
-
-        <div th:if="${#lists.isEmpty(joueurs)}" class="empty-state">
-            Tsy misy joueur mbola.
-        </div>
-
-        <table th:unless="${#lists.isEmpty(joueurs)}">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Joueur</th>
-                    <th>Equipe</th>
-                    <th>Poste</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="j, i : ${joueurs}">
-                    <td th:text="${i.count}"></td>
-                    <td th:text="${j.prenom} + ' ' + ${j.nom}"></td>
-                    <td th:text="${j.equipe.nom}"></td>
-                    <td>
-                        <span class="badge badge-cyan" th:text="${j.poste}"></span>
-                    </td>
-                    <td>
-                        <a th:href="@{/statistiques/joueur/{id}(id=${j.id})}"
-                           class="btn btn-primary">Voir Stats</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+<nav th:replace="~{layout :: nav}"></nav>
+<div class="container">
+    <div class="header-row">
+        <h1>📊 Statistiques</h1>
+        <a href="/statistiques/new" class="btn btn-primary">+ Ajouter Statistique</a>
     </div>
+
+    <div th:if="${#lists.isEmpty(joueurs)}" class="empty-state">
+        Aucun joueur disponible.
+    </div>
+
+    <table th:unless="${#lists.isEmpty(joueurs)}">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Joueur</th>
+                <th>Equipe</th>
+                <th>Poste</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="j, i : ${joueurs}">
+                <td th:text="${i.count}"></td>
+                <td th:text="${j.prenom} + ' ' + ${j.nom}"></td>
+                <td th:text="${j.equipe.nom}"></td>
+                <td>
+                    <span class="badge badge-cyan" th:text="${j.poste}"></span>
+                </td>
+                <td>
+                    <a th:href="@{/statistiques/joueur/{id}(id=${j.id})}"
+                       class="btn btn-primary">Voir Stats</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.touroi.gestion_tournoi.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "tournoi")
@@ -31,6 +32,10 @@ public class Tournoi {
 
     @Enumerated(EnumType.STRING)
     private StatutTournoi statut = StatutTournoi.EN_COURS;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "tournoi", fetch = FetchType.LAZY)
+    private List<Groupe> groupes;  
 
     public enum StatutTournoi {
         EN_COURS, TERMINE

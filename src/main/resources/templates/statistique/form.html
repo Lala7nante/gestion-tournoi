@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Statistique Form</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
-    <h1>+ Ajouter Statistique</h1>
+    <h1>📊 Ajouter Statistique</h1>
     <div class="card">
         <form action="/statistiques" method="post" th:object="${statistique}">
             <div class="form-group">
                 <label>Joueur</label>
                 <select name="joueurId" required>
-                    <option th:each="j : ${joueurs}" th:value="${j.id}"
-                            th:text="${j.prenom} + ' ' + ${j.nom} + ' (' + ${j.equipe.nom} + ')'"></option>
+                    <option th:each="j : ${joueurs}"
+                            th:value="${j.id}"
+                            th:text="${j.prenom} + ' ' + ${j.nom} + ' (' + ${j.equipe.nom} + ')'">
+                    </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Match</label>
                 <select name="matchId" required>
-                    <option th:each="m : ${matchs}" th:value="${m.id}"
-                            th:text="${m.equipeDomicile.nom} + ' vs ' + ${m.equipeExterieur.nom}"></option>
+                    <option th:each="m : ${matchs}"
+                            th:value="${m.id}"
+                            th:text="${m.equipeDomicile.nom} + ' vs ' + ${m.equipeExterieur.nom}">
+                    </option>
                 </select>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
@@ -44,7 +49,7 @@
             </div>
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="/matchs" class="btn btn-secondary">Annuler</a>
+                <a href="/statistiques" class="btn btn-secondary">Annuler</a>
             </div>
         </form>
     </div>

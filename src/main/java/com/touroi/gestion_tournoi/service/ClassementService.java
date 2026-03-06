@@ -3,8 +3,10 @@ package com.touroi.gestion_tournoi.service;
 import com.touroi.gestion_tournoi.model.Classement;
 import com.touroi.gestion_tournoi.model.MatchFootball;
 import com.touroi.gestion_tournoi.repository.ClassementRepository;
+import com.touroi.gestion_tournoi.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -13,54 +15,84 @@ public class ClassementService {
     @Autowired
     private ClassementRepository classementRepository;
 
-    // Mijery classement per groupe — trié automatique
+    @Autowired
+    private MatchRepository matchRepository;
+
     public List<Classement> findByGroupe(Long groupeId) {
         return classementRepository
-            .findByGroupeIdOrderByPointsDescButsMarquesDesc(groupeId);
+                .findByGroupeIdOrderByPointsDescButsMarquesDesc(groupeId);
     }
 
-    // Update AUTOMATIQUE rehefa TERMINE ny match (Phase GROUPE)
+    @Transactional
     public void updateClassement(MatchFootball match) {
+        Long groupeId = match.getEquipeDomicile().getGroupe().getId();
 
         Classement cDom = classementRepository
-            .findByEquipeId(match.getEquipeDomicile().getId())
-            .orElseThrow(() -> new RuntimeException("Classement tsy hita!"));
+                .findByEquipeIdAndGroupeId(
+                        match.getEquipeDomicile().getId(), groupeId)
+                .orElseThrow(() -> new RuntimeException("Classement Dom tsy hita!"));
 
         Classement cExt = classementRepository
-            .findByEquipeId(match.getEquipeExterieur().getId())
-            .orElseThrow(() -> new RuntimeException("Classement tsy hita!"));
+                .findByEquipeIdAndGroupeId(
+                        match.getEquipeExterieur().getId(), groupeId)
+                .orElseThrow(() -> new RuntimeException("Classement Ext tsy hita!"));
 
-        int scoreDom = match.getScoreDomicile();
-        int scoreExt = match.getScoreExterieur();
+        // ✅ Reset complet — tsy cumul intsony
+        resetClassement(cDom);
+        resetClassement(cExt);
 
-        // Update buts rehetra
-        cDom.setButsMarques(cDom.getButsMarques() + scoreDom);
-        cDom.setButsEncaisses(cDom.getButsEncaisses() + scoreExt);
-        cExt.setButsMarques(cExt.getButsMarques() + scoreExt);
-        cExt.setButsEncaisses(cExt.getButsEncaisses() + scoreDom);
+        // ✅ Recalcul depuis tous les matchs TERMINE
+        List<MatchFootball> matchsDom = matchRepository
+                .findByEquipeDomicileIdOrEquipeExterieurId(
+                        match.getEquipeDomicile().getId(),
+                        match.getEquipeDomicile().getId());
 
-        // Ekipa Domicile MENAKA
-        if (scoreDom > scoreExt) {
-            cDom.setPoints(cDom.getPoints() + 3);
-            cDom.setVictoires(cDom.getVictoires() + 1);
-            cExt.setDefaites(cExt.getDefaites() + 1);
+        List<MatchFootball> matchsExt = matchRepository
+                .findByEquipeDomicileIdOrEquipeExterieurId(
+                        match.getEquipeExterieur().getId(),
+                        match.getEquipeExterieur().getId());
+
+        for (MatchFootball m : matchsDom) {
+            if (m.getStatut() == MatchFootball.Statut.TERMINE) {
+                calculerStats(cDom, m, match.getEquipeDomicile().getId());
+            }
         }
-        // Ekipa Extérieur MENAKA
-        else if (scoreExt > scoreDom) {
-            cExt.setPoints(cExt.getPoints() + 3);
-            cExt.setVictoires(cExt.getVictoires() + 1);
-            cDom.setDefaites(cDom.getDefaites() + 1);
-        }
-        // NUL
-        else {
-            cDom.setPoints(cDom.getPoints() + 1);
-            cDom.setNuls(cDom.getNuls() + 1);
-            cExt.setPoints(cExt.getPoints() + 1);
-            cExt.setNuls(cExt.getNuls() + 1);
+
+        for (MatchFootball m : matchsExt) {
+            if (m.getStatut() == MatchFootball.Statut.TERMINE) {
+                calculerStats(cExt, m, match.getEquipeExterieur().getId());
+            }
         }
 
         classementRepository.save(cDom);
         classementRepository.save(cExt);
     }
-}
 
+    private void resetClassement(Classement c) {
+        c.setPoints(0);
+        c.setVictoires(0);
+        c.setNuls(0);
+        c.setDefaites(0);
+        c.setButsMarques(0);
+        c.setButsEncaisses(0);
+    }
+
+    private void calculerStats(Classement c, MatchFootball m, Long equipeId) {
+        boolean isDomicile = m.getEquipeDomicile().getId().equals(equipeId);
+        int scorePour = isDomicile ? m.getScoreDomicile() : m.getScoreExterieur();
+        int scoreContre = isDomicile ? m.getScoreExterieur() : m.getScoreDomicile();
+
+        c.setButsMarques(c.getButsMarques() + scorePour);
+        c.setButsEncaisses(c.getButsEncaisses() + scoreContre);
+
+        if (scorePour > scoreContre) {
+            c.setPoints(c.getPoints() + 3);
+            c.setVictoires(c.getVictoires() + 1);
+        } else if (scoreContre > scorePour) {
+            c.setDefaites(c.getDefaites() + 1);
+        } else {
+            c.setPoints(c.getPoints() + 1);
+            c.setNuls(c.getNuls() + 1);
+        }
+    }
+}

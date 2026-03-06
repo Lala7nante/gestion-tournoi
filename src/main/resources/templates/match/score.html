@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Score</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <h1>⚽ Enregistrer Score</h1>
     <div class="card">
@@ -72,7 +73,7 @@
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary">✅ Confirmer Score</button>
-                <a href="/matchs" class="btn btn-secondary">Annuler</a>
+                <a th:href="@{/matchs}" class="btn btn-secondary">Annuler</a>
             </div>
         </form>
     </div>

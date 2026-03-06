@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ClassementRepository 
-    extends JpaRepository<Classement, Long> {
-    
-    List<Classement> findByGroupeIdOrderByPointsDescButsMarquesDesc(
-        Long groupeId);
+public interface ClassementRepository extends JpaRepository<Classement, Long> {
+
+    List<Classement> findByGroupeIdOrderByPointsDescButsMarquesDesc(Long groupeId);
+
     Optional<Classement> findByEquipeId(Long equipeId);
+
+    Optional<Classement> findByEquipeIdAndGroupeId(Long equipeId, Long groupeId);
 }

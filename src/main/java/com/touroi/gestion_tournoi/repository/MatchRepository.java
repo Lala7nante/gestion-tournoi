@@ -6,10 +6,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MatchRepository 
-    extends JpaRepository<MatchFootball, Long> {
-    
+public interface MatchRepository extends JpaRepository<MatchFootball, Long> {
+
     List<MatchFootball> findByPhase(MatchFootball.Phase phase);
+
     List<MatchFootball> findByEquipeDomicileIdOrEquipeExterieurId(
-        Long domId, Long extId);
+            Long domId, Long extId);
 }

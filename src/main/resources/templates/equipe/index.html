@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Equipes</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <div class="header-row">
         <h1>🏟️ Equipes — Groupe <span th:text="${groupe.nom}"></span></h1>
@@ -32,7 +33,8 @@
                         <a th:href="@{/equipes/{id}/joueurs(id=${e.id})}" class="btn btn-primary">Joueurs</a>
                         <a th:href="@{/groupes/{gId}/equipes/{id}/edit(gId=${groupe.id},id=${e.id})}" class="btn btn-warning">Modifier</a>
                         <a th:href="@{/groupes/{gId}/equipes/{id}/delete(gId=${groupe.id},id=${e.id})}"
-                           class="btn btn-danger" onclick="return confirm('Hamafa ve?')">Supprimer</a>
+                           class="btn btn-danger"
+                           onclick="return confirm('Voulez-vous supprimer cette équipe ?')">Supprimer</a>
                     </div>
                 </td>
             </tr>

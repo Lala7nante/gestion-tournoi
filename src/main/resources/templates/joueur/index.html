@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Joueurs</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <div class="header-row">
-        <h1>👟 Joueurs — <span th:text="${equipe.nom}"></span></h1>
+        <h1> Joueurs — <span th:text="${equipe.nom}"></span></h1>
         <div class="actions">
             <a th:href="@{/equipes/{id}/joueurs/new(id=${equipe.id})}" class="btn btn-primary">+ Ajouter Joueur</a>
-            <a th:href="@{/groupes/{id}/equipes(id=${equipe.groupe.id})}" class="btn btn-secondary">← Retour</a>
+            <!-- ✅ Retour ovaina -->
+            <a th:href="@{/equipes}" class="btn btn-secondary">← Retour</a>
         </div>
     </div>
 
-    <table>
+    <div th:if="${#lists.isEmpty(joueurs)}" class="empty-state">
+        Aucun joueur pour l'instant.
+    </div>
+
+    <table th:if="${!#lists.isEmpty(joueurs)}">
         <thead>
             <tr>
                 <th>#</th>
@@ -29,14 +35,15 @@
                 <td th:text="${j.prenom}"></td>
                 <td th:text="${j.age}"></td>
                 <td>
-                    <span class="badge badge-green" th:text="${j.poste}"></span>
+                    <span class="badge badge-cyan" th:text="${j.poste}"></span>
                 </td>
                 <td>
                     <div class="actions">
                         <a th:href="@{/statistiques/joueur/{id}(id=${j.id})}" class="btn btn-secondary">Stats</a>
                         <a th:href="@{/equipes/{eId}/joueurs/{id}/edit(eId=${equipe.id},id=${j.id})}" class="btn btn-warning">Modifier</a>
                         <a th:href="@{/equipes/{eId}/joueurs/{id}/delete(eId=${equipe.id},id=${j.id})}"
-                           class="btn btn-danger" onclick="return confirm('Hamafa ve?')">Supprimer</a>
+                           class="btn btn-danger"
+                           onclick="return confirm('Voulez-vous supprimer ce joueur ?')">Supprimer</a>
                     </div>
                 </td>
             </tr>

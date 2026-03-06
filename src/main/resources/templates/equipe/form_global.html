@@ -5,12 +5,17 @@
     <nav th:replace="~{layout :: nav}"></nav>
     <div class="container">
         <h1>Ajouter Equipe</h1>
+        <!-- ✅ Message erreur -->
+        <div th:if="${errorMessage}" class="badge badge-red"
+            style="padding:1rem;margin-bottom:1rem;display:block;font-size:1rem">
+        ⚠️ <span th:text="${errorMessage}"></span>
+        </div>
         <div class="card">
             <form action="/equipes" method="post" th:object="${equipe}">
                 <div class="form-group">
                     <label>Groupe</label>
                     <select name="groupeId" required>
-                        <option value="">-- Misafidy Groupe --</option>
+                        <option value="">-Choix de groupe-</option>
                         <option th:each="g : ${groupes}"
                                 th:value="${g.id}"
                                 th:text="'Groupe ' + ${g.nom} + ' — ' + ${g.tournoi.nom}">

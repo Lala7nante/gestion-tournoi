@@ -6,7 +6,6 @@ import com.touroi.gestion_tournoi.model.Groupe;
 import com.touroi.gestion_tournoi.repository.ClassementRepository;
 import com.touroi.gestion_tournoi.repository.EquipeRepository;
 import com.touroi.gestion_tournoi.repository.GroupeRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -25,38 +24,37 @@ public class EquipeService {
 
     @Autowired
     private GroupeRepository groupeRepository;
-    
 
-    // Mijery ekipa rehetra
+    // Lister toutes les équipes
     public List<Equipe> findAll() {
         return equipeRepository.findAll();
     }
 
-    // Mijery ekipa rehetra amin'ny groupe
+    // Lister les équipes d'un groupe
     public List<Equipe> findByGroupe(Long groupeId) {
         return equipeRepository.findByGroupeId(groupeId);
     }
 
-    // Mijery ekipa iray
+    // Trouver une équipe
     public Equipe findById(Long id) {
         return equipeRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Equipe tsy hita!"));
+                .orElseThrow(() -> new RuntimeException("Équipe introuvable !"));
     }
 
-    // Manampy ekipa ao anatin'ny groupe
+    // Ajouter une équipe dans un groupe
     public Equipe save(Equipe equipe, Long groupeId) {
         Groupe groupe = groupeService.findById(groupeId);
 
-        // Validation: tsy azo asiana raha efa feno 4
+        // Validation: groupe complet
         int count = equipeRepository.countByGroupeId(groupeId);
         if (count >= 4) {
-            throw new RuntimeException("Efa feno 4 ny ekipa amin'ity groupe ity!");
+            throw new RuntimeException("Ce groupe est complet (4 équipes maximum) !");
         }
 
         equipe.setGroupe(groupe);
         Equipe savedEquipe = equipeRepository.save(equipe);
 
-        // Mamorona classement automatique ho an'ny ekipa vaovao
+        // Créer le classement automatiquement
         Classement classement = new Classement();
         classement.setEquipe(savedEquipe);
         classement.setGroupe(groupe);
@@ -65,7 +63,7 @@ public class EquipeService {
         return savedEquipe;
     }
 
-    // Manova ekipa
+    // Modifier une équipe
     public Equipe update(Long id, Equipe equipe) {
         Equipe existing = findById(id);
         existing.setNom(equipe.getNom());
@@ -74,12 +72,12 @@ public class EquipeService {
         return equipeRepository.save(existing);
     }
 
-    // Mamafa ekipa
+    // Supprimer une équipe
     public void delete(Long id) {
         equipeRepository.deleteById(id);
     }
 
-    // Mijery groupes rehetra (ho an'ny dropdown)
+    // Lister tous les groupes (pour le dropdown)
     public List<Groupe> findAllGroupes() {
         return groupeRepository.findAll();
     }

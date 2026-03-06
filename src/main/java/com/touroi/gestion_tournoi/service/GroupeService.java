@@ -34,7 +34,7 @@ public class GroupeService {
         // Validation: tsy azo mamorona groupe raha efa feno
         int existingGroupes = groupeRepository.countByTournoiId(tournoiId);
         if (existingGroupes >= tournoi.getNbGroupes()) {
-            throw new RuntimeException("Efa feno ny groupe amin'ity tournoi ity!");
+            throw new RuntimeException("Le nombre maximum de groupes est atteint !");
         }
 
         // Nom automatique: A, B, C...

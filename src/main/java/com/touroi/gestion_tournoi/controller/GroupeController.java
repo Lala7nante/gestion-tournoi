@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/tournois/{tournoiId}/groupes")
@@ -17,7 +18,6 @@ public class GroupeController {
     @Autowired
     private TournoiService tournoiService;
 
-    // Lista groupe amin'ny tournoi
     @GetMapping
     public String index(@PathVariable Long tournoiId, Model model) {
         model.addAttribute("tournoi", tournoiService.findById(tournoiId));
@@ -25,14 +25,18 @@ public class GroupeController {
         return "groupe/index";
     }
 
-    // Mamorona groupe — nom automatique
+    // ✅ Mampiseho message raha feno ny groupe
     @PostMapping
-    public String save(@PathVariable Long tournoiId) {
-        groupeService.save(tournoiId);
+    public String save(@PathVariable Long tournoiId,
+                       RedirectAttributes redirectAttributes) {
+        try {
+            groupeService.save(tournoiId);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/tournois/" + tournoiId + "/groupes";
     }
 
-    // Mamafa groupe
     @GetMapping("/{id}/delete")
     public String delete(@PathVariable Long tournoiId,
                          @PathVariable Long id) {

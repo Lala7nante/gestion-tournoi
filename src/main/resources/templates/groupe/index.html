@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Groupes</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
+
 <div class="container">
     <div class="header-row">
         <h1>🗂️ Groupes — <span th:text="${tournoi.nom}"></span></h1>
+        <!-- ✅ Message error -->
+        <div th:if="${errorMessage}" class="badge badge-red" 
+            style="padding:1rem;margin-bottom:1rem;display:block;font-size:1rem">
+         ⚠️ <span th:text="${errorMessage}"></span>
+        </div>
         <div class="actions">
             <form th:action="@{/tournois/{id}/groupes(id=${tournoi.id})}" method="post">
                 <button type="submit" class="btn btn-primary">+ Ajouter Groupe</button>
@@ -14,7 +21,7 @@
     </div>
 
     <div th:if="${#lists.isEmpty(groupes)}" class="empty-state">
-        Tsy misy groupe mbola.
+        Aucun groupe pour l'instant.
     </div>
 
     <div th:each="g : ${groupes}" class="card" style="margin-bottom:1rem">
@@ -24,7 +31,8 @@
                 <a th:href="@{/groupes/{id}/equipes(id=${g.id})}" class="btn btn-primary">Equipes</a>
                 <a th:href="@{/groupes/{id}/classement(id=${g.id})}" class="btn btn-warning">Classement</a>
                 <a th:href="@{/tournois/{tId}/groupes/{id}/delete(tId=${tournoi.id},id=${g.id})}"
-                   class="btn btn-danger" onclick="return confirm('Hamafa ve?')">Supprimer</a>
+                   class="btn btn-danger"
+                   onclick="return confirm('Voulez-vous supprimer ce groupe ?')">Supprimer</a>
             </div>
         </div>
         <p style="color:#666;font-size:0.9rem">
@@ -32,5 +40,6 @@
         </p>
     </div>
 </div>
+
 </body>
 </html>

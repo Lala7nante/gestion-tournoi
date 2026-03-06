@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Statistiques Joueur</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
-    <h1>📈 Stats — <span th:text="${joueur.prenom} + ' ' + ${joueur.nom}"></span></h1>
-    <p style="color:#666;margin-bottom:1.5rem"
+    <div class="header-row">
+        <h1>📈 Stats — <span th:text="${joueur.prenom} + ' ' + ${joueur.nom}"></span></h1>
+        <a th:href="@{/equipes/{id}/joueurs(id=${joueur.equipe.id})}" class="btn btn-secondary">← Retour</a>
+    </div>
+
+    <p style="color:#00c8ff;margin-bottom:1.5rem;font-weight:700;letter-spacing:1px"
        th:text="${joueur.equipe.nom} + ' · ' + ${joueur.poste}"></p>
 
-    <table>
+    <div th:if="${#lists.isEmpty(statistiques)}" class="empty-state">
+        Aucune statistique disponible.
+    </div>
+
+    <table th:if="${!#lists.isEmpty(statistiques)}">
         <thead>
             <tr>
                 <th>Match</th>
