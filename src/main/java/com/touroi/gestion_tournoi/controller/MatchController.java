@@ -118,4 +118,36 @@ public class MatchController {
         }
         return "redirect:/matchs";
     }
+    @PostMapping("/matchs/{id}/stats")
+public String updateStats(
+        @PathVariable Long id,
+        @RequestParam int tirsDomicile,
+        @RequestParam int tirsCadresDomicile,
+        @RequestParam int possessionDomicile,
+        @RequestParam int passesDomicile,
+        @RequestParam int fautesDomicile,
+        @RequestParam int cartonsJaunesDomicile,
+        @RequestParam int cartonsRougesDomicile,
+        @RequestParam int cornersDomicile,
+        @RequestParam int horsJeuDomicile,
+        @RequestParam int tirsExterieur,
+        @RequestParam int tirsCadresExterieur,
+        @RequestParam int possessionExterieur,
+        @RequestParam int passesExterieur,
+        @RequestParam int fautesExterieur,
+        @RequestParam int cartonsJaunesExterieur,
+        @RequestParam int cartonsRougesExterieur,
+        @RequestParam int cornersExterieur,
+        @RequestParam int horsJeuExterieur) {
+
+    matchService.updateStats(id,
+            tirsDomicile, tirsCadresDomicile, possessionDomicile,
+            passesDomicile, fautesDomicile, cartonsJaunesDomicile,
+            cartonsRougesDomicile, cornersDomicile, horsJeuDomicile,
+            tirsExterieur, tirsCadresExterieur, possessionExterieur,
+            passesExterieur, fautesExterieur, cartonsJaunesExterieur,
+            cartonsRougesExterieur, cornersExterieur, horsJeuExterieur);
+
+    return "redirect:/statistiques/match/" + id;
+}
 }

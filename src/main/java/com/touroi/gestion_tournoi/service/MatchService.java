@@ -132,4 +132,35 @@ public class MatchService {
         }
         matchRepository.deleteById(id);
     }
+    public MatchFootball updateStats(Long matchId,
+        int tirsDomicile, int tirsCadresDomicile, int possessionDomicile,
+        int passesDomicile, int fautesDomicile, int cartonsJaunesDomicile,
+        int cartonsRougesDomicile, int cornersDomicile, int horsJeuDomicile,
+        int tirsExterieur, int tirsCadresExterieur, int possessionExterieur,
+        int passesExterieur, int fautesExterieur, int cartonsJaunesExterieur,
+        int cartonsRougesExterieur, int cornersExterieur, int horsJeuExterieur) {
+
+    MatchFootball match = findById(matchId);
+
+    match.setTirsDomicile(tirsDomicile);
+    match.setTirsCadresDomicile(tirsCadresDomicile);
+    match.setPossessionDomicile(possessionDomicile);
+    match.setPassesDomicile(passesDomicile);
+    match.setFautesDomicile(fautesDomicile);
+    match.setCartonsJaunesDomicile(cartonsJaunesDomicile);
+    match.setCartonsRougesDomicile(cartonsRougesDomicile);
+    match.setCornersDomicile(cornersDomicile);
+    match.setHorsJeuDomicile(horsJeuDomicile);
+    match.setTirsExterieur(tirsExterieur);
+    match.setTirsCadresExterieur(tirsCadresExterieur);
+    match.setPossessionExterieur(possessionExterieur);
+    match.setPassesExterieur(passesExterieur);
+    match.setFautesExterieur(fautesExterieur);
+    match.setCartonsJaunesExterieur(cartonsJaunesExterieur);
+    match.setCartonsRougesExterieur(cartonsRougesExterieur);
+    match.setCornersExterieur(cornersExterieur);
+    match.setHorsJeuExterieur(horsJeuExterieur);
+
+    return matchRepository.save(match);
+}
 }
