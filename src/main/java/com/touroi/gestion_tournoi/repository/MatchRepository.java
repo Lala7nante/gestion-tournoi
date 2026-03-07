@@ -12,4 +12,8 @@ public interface MatchRepository extends JpaRepository<MatchFootball, Long> {
 
     List<MatchFootball> findByEquipeDomicileIdOrEquipeExterieurId(
             Long domId, Long extId);
+    List<MatchFootball> findByPhaseAndStatut(MatchFootball.Phase phase, MatchFootball.Statut statut);
+
+    List<MatchFootball> findByStatutOrderByDateMatchDesc(MatchFootball.Statut statut);
+    List<MatchFootball> findByStatutOrderByDateMatchAsc(MatchFootball.Statut statut);
 }

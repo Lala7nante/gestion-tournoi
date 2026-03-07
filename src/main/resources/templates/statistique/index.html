@@ -4,15 +4,19 @@
 <body>
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
-    <div class="header-row">
-        <h1>📊 Statistiques</h1>
-        <a href="/statistiques/new" class="btn btn-primary">+ Ajouter Statistique</a>
+    <h1>📊 Statistiques</h1>
+
+    <!-- Choix Tournoi -->
+    <div th:each="t : ${tournois}" class="card" style="margin-bottom:1rem">
+        <div class="header-row">
+            <h2 th:text="${t.nom}"></h2>
+            <a th:href="@{/statistiques/tournoi/{id}(id=${t.id})}"
+               class="btn btn-primary">Voir Statistiques →</a>
+        </div>
     </div>
 
-    <div th:if="${#lists.isEmpty(joueurs)}" class="empty-state">
-        Aucun joueur disponible.
-    </div>
-
+    <!-- Liste Joueurs -->
+    <h2 style="margin-top:2rem">Statistiques joueurs</h2>
     <table th:unless="${#lists.isEmpty(joueurs)}">
         <thead>
             <tr>
@@ -28,9 +32,7 @@
                 <td th:text="${i.count}"></td>
                 <td th:text="${j.prenom} + ' ' + ${j.nom}"></td>
                 <td th:text="${j.equipe.nom}"></td>
-                <td>
-                    <span class="badge badge-cyan" th:text="${j.poste}"></span>
-                </td>
+                <td><span class="badge badge-cyan" th:text="${j.poste}"></span></td>
                 <td>
                     <a th:href="@{/statistiques/joueur/{id}(id=${j.id})}"
                        class="btn btn-primary">Voir Stats</a>

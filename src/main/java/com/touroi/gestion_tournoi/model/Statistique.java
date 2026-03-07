@@ -27,7 +27,10 @@ public class Statistique {
     private int cartonsJaunes = 0;
     private int cartonsRouges = 0;
     private int minutesJouees = 0;
-
-    // ✅ Minute(s) des buts ex: "34', 67'"
     private String minutesButs = "";
+
+    // ✅ Fields vaovao
+    private int butsEnPenalty = 0;
+    private int butsSurCoupFranc = 0;
+    private int dribblesReussis = 0;
 }

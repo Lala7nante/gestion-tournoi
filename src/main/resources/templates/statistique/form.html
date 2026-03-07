@@ -1,30 +1,82 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css"/>
+<style>
+    .select2-container--default .select2-selection--single {
+        background-color: #111;
+        border: 1px solid #333;
+        border-radius: 6px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding: 0 0.5rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #fff;
+        line-height: 42px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 42px;
+    }
+    .select2-dropdown {
+        background-color: #111;
+        border: 1px solid #333;
+    }
+    .select2-container--default .select2-results__option {
+        color: #fff;
+        padding: 0.5rem 1rem;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #00c8ff;
+        color: #000;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        background-color: #222;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 0.4rem;
+        border-radius: 4px;
+    }
+    .select2-container { width: 100% !important; }
+</style>
 <body>
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <h1>📊 Ajouter Statistique</h1>
+    <div th:if="${errorMessage}" class="alert"
+     style="background:#ff3b3b22;border:1px solid #ff3b3b;color:#ff6b8a;
+            padding:1rem;border-radius:8px;margin-bottom:1rem">
+    ⚠️ <span th:text="${errorMessage}"></span>
+    </div>
     <div class="card">
         <form action="/statistiques" method="post" th:object="${statistique}">
+
+            <!-- Joueur avec recherche -->
             <div class="form-group">
                 <label>Joueur</label>
-                <select name="joueurId" required>
+                <select name="joueurId" id="joueurSelect" required>
+                    <option value="">-- Rechercher un joueur --</option>
                     <option th:each="j : ${joueurs}"
                             th:value="${j.id}"
                             th:text="${j.prenom} + ' ' + ${j.nom} + ' (' + ${j.equipe.nom} + ')'">
                     </option>
                 </select>
             </div>
+
+            <!-- Match -->
             <div class="form-group">
                 <label>Match</label>
-                <select name="matchId" required>
+                <select name="matchId" id="matchSelect" required>
+                    <option value="">-- Sélectionner un match --</option>
                     <option th:each="m : ${matchs}"
                             th:value="${m.id}"
                             th:text="${m.equipeDomicile.nom} + ' vs ' + ${m.equipeExterieur.nom}">
                     </option>
                 </select>
             </div>
+
+            <!-- Stats -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
                 <div class="form-group">
                     <label>⚽ Buts</label>
@@ -43,14 +95,33 @@
                     <input type="number" th:field="*{cartonsRouges}" min="0" value="0"/>
                 </div>
             </div>
+
             <div class="form-group">
-                 <label>⚽ Minutes des buts (ex: 34, 67)</label>
-                 <input type="text" th:field="*{minutesButs}" placeholder="ex: 34, 67"/>
+                <label>⚽ Minutes des buts (ex: 34, 67)</label>
+                <input type="text" th:field="*{minutesButs}" placeholder="ex: 34, 67"/>
             </div>
+
+            <!-- Fields vaovao -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+                <div class="form-group">
+                    <label>🥅 Buts en Penalty</label>
+                    <input type="number" th:field="*{butsEnPenalty}" min="0" value="0"/>
+                </div>
+                <div class="form-group">
+                    <label>🎯 Buts Coup Franc</label>
+                    <input type="number" th:field="*{butsSurCoupFranc}" min="0" value="0"/>
+                </div>
+                <div class="form-group">
+                    <label>💨 Dribbles Réussis</label>
+                    <input type="number" th:field="*{dribblesReussis}" min="0" value="0"/>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>⏱️ Minutes Jouées</label>
                 <input type="number" th:field="*{minutesJouees}" min="0" max="120" value="90"/>
             </div>
+
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
                 <a href="/statistiques" class="btn btn-secondary">Annuler</a>
@@ -58,5 +129,28 @@
         </form>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#joueurSelect').select2({
+        placeholder: "🔍 Rechercher un joueur...",
+        allowClear: true,
+        language: {
+            noResults: function() { return "Aucun joueur trouvé"; },
+            searching: function() { return "Recherche..."; }
+        }
+    });
+    $('#matchSelect').select2({
+        placeholder: "🔍 Rechercher un match...",
+        allowClear: true,
+        language: {
+            noResults: function() { return "Aucun match trouvé"; },
+            searching: function() { return "Recherche..."; }
+        }
+    });
+});
+</script>
 </body>
 </html>

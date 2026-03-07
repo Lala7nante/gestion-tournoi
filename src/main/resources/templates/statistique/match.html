@@ -5,46 +5,57 @@
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
 
-    <!-- Header Score + Buteurs -->
-    <div class="card" style="text-align:center;margin-bottom:1.5rem;padding:2rem">
-        <p style="color:#666;font-size:0.8rem;letter-spacing:2px;margin-bottom:1rem"
-           th:text="${match.phase} + ' · ' + ${match.dateMatch}"></p>
-        <div style="display:flex;justify-content:center;align-items:center;gap:3rem">
-            <div style="text-align:right;flex:1">
-                <h2 th:text="${match.equipeDomicile.nom}" style="font-size:1.5rem;margin-bottom:0.5rem"></h2>
-                <div th:each="s : ${statistiques}">
-                    <div th:if="${s.joueur.equipe.id == match.equipeDomicile.id and s.buts > 0}"
-                         style="color:#aaa;font-size:0.85rem">
-                        ⚽ <span th:text="${s.joueur.prenom} + ' ' + ${s.joueur.nom}"></span>
-                        <span th:if="${s.minutesButs != null and s.minutesButs != ''}"
-                              th:text="' ' + ${s.minutesButs} + ''''"></span>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align:center">
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;color:#00c8ff;line-height:1"
-                     th:text="${match.scoreDomicile} + ' - ' + ${match.scoreExterieur}"></div>
-                <span class="badge badge-cyan" style="margin-top:0.5rem">Terminé</span>
-            </div>
-            <div style="text-align:left;flex:1">
-                <h2 th:text="${match.equipeExterieur.nom}" style="font-size:1.5rem;margin-bottom:0.5rem"></h2>
-                <div th:each="s : ${statistiques}">
-                    <div th:if="${s.joueur.equipe.id == match.equipeExterieur.id and s.buts > 0}"
-                         style="color:#aaa;font-size:0.85rem">
-                        ⚽ <span th:text="${s.joueur.prenom} + ' ' + ${s.joueur.nom}"></span>
-                        <span th:if="${s.minutesButs != null and s.minutesButs != ''}"
-                              th:text="' ' + ${s.minutesButs} + ''''"></span>
-                    </div>
+   <!-- Header Score + Buteurs -->
+<div class="card" style="text-align:center;margin-bottom:1.5rem;padding:2rem">
+    <p style="color:#666;font-size:0.8rem;letter-spacing:2px;margin-bottom:1rem"
+       th:text="${match.phase} + ' · ' + ${match.dateMatch}"></p>
+
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:1rem">
+
+        <!-- Equipe Domicile -->
+        <div style="text-align:right">
+            <h2 th:text="${match.equipeDomicile.nom}"
+                style="font-size:1.5rem;margin-bottom:0.5rem"></h2>
+            <div th:each="s : ${statistiques}">
+                <div th:if="${s.joueur.equipe.id == match.equipeDomicile.id and s.buts > 0}"
+                     style="color:#aaa;font-size:0.85rem;margin-top:0.3rem">
+                    ⚽ <span th:text="${s.joueur.prenom} + ' ' + ${s.joueur.nom}"></span>
+                    <span th:if="${s.minutesButs != null and !#strings.isEmpty(s.minutesButs)}"
+                          style="color:#00c8ff"
+                          th:text="|${s.minutesButs}'|"></span>
                 </div>
             </div>
         </div>
+
+        <!-- Score centre -->
+        <div style="text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;color:#00c8ff;line-height:1"
+                 th:text="${match.scoreDomicile} + ' - ' + ${match.scoreExterieur}"></div>
+            <span class="badge badge-cyan" style="margin-top:0.5rem">Terminé</span>
+        </div>
+
+        <!-- Equipe Extérieur -->
+        <div style="text-align:left">
+            <h2 th:text="${match.equipeExterieur.nom}"
+                style="font-size:1.5rem;margin-bottom:0.5rem"></h2>
+            <div th:each="s : ${statistiques}">
+                <div th:if="${s.joueur.equipe.id == match.equipeExterieur.id and s.buts > 0}"
+                     style="color:#aaa;font-size:0.85rem;margin-top:0.3rem">
+                    ⚽ <span th:text="${s.joueur.prenom} + ' ' + ${s.joueur.nom}"></span>
+                    <span th:if="${s.minutesButs != null and !#strings.isEmpty(s.minutesButs)}"
+                          style="color:#00c8ff"
+                          th:text="|${s.minutesButs}'|"></span>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
 
     <!-- Stats par équipe — EDITABLE -->
     <div class="card" style="margin-bottom:1.5rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
             <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px">STATISTIQUES DU MATCH</h2>
-            <!-- ✅ Bouton Edit -->
             <button onclick="toggleEdit()" id="btnEdit" class="btn btn-warning">✏️ Modifier</button>
         </div>
 
@@ -63,7 +74,7 @@
                             <span class="stat-view" th:text="${match.tirsDomicile}"></span>
                             <input class="stat-input" type="number" name="tirsDomicile" th:value="${match.tirsDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🎯 Tirs</td>
+                        <td style="text-align:center;color:#00c8ff">Tirs</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.tirsExterieur}"></span>
                             <input class="stat-input" type="number" name="tirsExterieur" th:value="${match.tirsExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -74,7 +85,7 @@
                             <span class="stat-view" th:text="${match.tirsCadresDomicile}"></span>
                             <input class="stat-input" type="number" name="tirsCadresDomicile" th:value="${match.tirsCadresDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🎯 Tirs Cadrés</td>
+                        <td style="text-align:center;color:#00c8ff">Tirs Cadrés</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.tirsCadresExterieur}"></span>
                             <input class="stat-input" type="number" name="tirsCadresExterieur" th:value="${match.tirsCadresExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -85,7 +96,7 @@
                             <span class="stat-view" th:text="${match.possessionDomicile} + '%'"></span>
                             <input class="stat-input" type="number" name="possessionDomicile" th:value="${match.possessionDomicile}" min="0" max="100" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">⚽ Possession</td>
+                        <td style="text-align:center;color:#00c8ff">Possession</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.possessionExterieur} + '%'"></span>
                             <input class="stat-input" type="number" name="possessionExterieur" th:value="${match.possessionExterieur}" min="0" max="100" style="display:none;width:70px;text-align:center"/>
@@ -96,7 +107,7 @@
                             <span class="stat-view" th:text="${match.passesDomicile}"></span>
                             <input class="stat-input" type="number" name="passesDomicile" th:value="${match.passesDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🔄 Passes</td>
+                        <td style="text-align:center;color:#00c8ff">Passes</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.passesExterieur}"></span>
                             <input class="stat-input" type="number" name="passesExterieur" th:value="${match.passesExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -107,7 +118,7 @@
                             <span class="stat-view" th:text="${match.fautesDomicile}"></span>
                             <input class="stat-input" type="number" name="fautesDomicile" th:value="${match.fautesDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">⚠️ Fautes</td>
+                        <td style="text-align:center;color:#00c8ff">Fautes</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.fautesExterieur}"></span>
                             <input class="stat-input" type="number" name="fautesExterieur" th:value="${match.fautesExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -118,7 +129,7 @@
                             <span class="stat-view" th:text="${match.cartonsJaunesDomicile}"></span>
                             <input class="stat-input" type="number" name="cartonsJaunesDomicile" th:value="${match.cartonsJaunesDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🟡 Cartons Jaunes</td>
+                        <td style="text-align:center;color:#00c8ff">Cartons Jaunes</td>
                         <td style="text-align:left;color:#ff9f1c">
                             <span class="stat-view" th:text="${match.cartonsJaunesExterieur}"></span>
                             <input class="stat-input" type="number" name="cartonsJaunesExterieur" th:value="${match.cartonsJaunesExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -129,7 +140,7 @@
                             <span class="stat-view" th:text="${match.cartonsRougesDomicile}"></span>
                             <input class="stat-input" type="number" name="cartonsRougesDomicile" th:value="${match.cartonsRougesDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🔴 Cartons Rouges</td>
+                        <td style="text-align:center;color:#00c8ff">Cartons Rouges</td>
                         <td style="text-align:left;color:#ff6b8a">
                             <span class="stat-view" th:text="${match.cartonsRougesExterieur}"></span>
                             <input class="stat-input" type="number" name="cartonsRougesExterieur" th:value="${match.cartonsRougesExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -140,7 +151,7 @@
                             <span class="stat-view" th:text="${match.cornersDomicile}"></span>
                             <input class="stat-input" type="number" name="cornersDomicile" th:value="${match.cornersDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🔲 Corners</td>
+                        <td style="text-align:center;color:#00c8ff">Corners</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.cornersExterieur}"></span>
                             <input class="stat-input" type="number" name="cornersExterieur" th:value="${match.cornersExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -151,7 +162,7 @@
                             <span class="stat-view" th:text="${match.horsJeuDomicile}"></span>
                             <input class="stat-input" type="number" name="horsJeuDomicile" th:value="${match.horsJeuDomicile}" min="0" style="display:none;width:70px;text-align:center"/>
                         </td>
-                        <td style="text-align:center;color:#00c8ff">🚩 Hors-Jeu</td>
+                        <td style="text-align:center;color:#00c8ff">Hors-Jeu</td>
                         <td style="text-align:left">
                             <span class="stat-view" th:text="${match.horsJeuExterieur}"></span>
                             <input class="stat-input" type="number" name="horsJeuExterieur" th:value="${match.horsJeuExterieur}" min="0" style="display:none;width:70px;text-align:center"/>
@@ -160,9 +171,8 @@
                 </tbody>
             </table>
 
-            <!-- ✅ Bouton Enregistrer — caché par défaut -->
             <div id="saveBtn" style="display:none;margin-top:1rem;text-align:center">
-                <button type="submit" class="btn btn-primary">✅ Enregistrer</button>
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
                 <button type="button" onclick="toggleEdit()" class="btn btn-secondary">Annuler</button>
             </div>
         </form>
@@ -222,13 +232,11 @@ function toggleEdit() {
     const isEditing = inputs[0].style.display === 'inline-block';
 
     if (isEditing) {
-        // Annuler
         inputs.forEach(i => i.style.display = 'none');
         views.forEach(v => v.style.display = 'inline');
         saveBtn.style.display = 'none';
         btnEdit.textContent = '✏️ Modifier';
     } else {
-        // Activer edit
         inputs.forEach(i => i.style.display = 'inline-block');
         views.forEach(v => v.style.display = 'none');
         saveBtn.style.display = 'block';

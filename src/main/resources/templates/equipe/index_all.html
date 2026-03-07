@@ -14,7 +14,16 @@
         ⚠️ <span th:text="${errorMessage}"></span>
     </div>
 
-    <table>
+    <!-- Barre de recherche -->
+    <div style="margin-bottom:1.5rem">
+        <input type="text" id="searchEquipe"
+               placeholder="🔍 Rechercher une équipe, ville, coach, groupe..."
+               onkeyup="filterEquipes()"
+               style="width:100%;padding:0.8rem 1rem;background:#111;border:1px solid #333;
+                      color:#fff;border-radius:8px;font-size:1rem;box-sizing:border-box"/>
+    </div>
+
+    <table id="equipeTable">
         <thead>
             <tr>
                 <th>#</th>
@@ -26,7 +35,7 @@
                 <th style="min-width:280px">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="equipeBody">
             <tr th:each="e, i : ${equipes}">
                 <td th:text="${i.count}"></td>
                 <td th:text="${e.nom}"></td>
@@ -46,6 +55,31 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Message si aucun résultat -->
+    <div id="noResult" style="display:none;text-align:center;color:#666;padding:2rem">
+        Aucune équipe trouvée
+    </div>
 </div>
+
+<script>
+function filterEquipes() {
+    const input = document.getElementById('searchEquipe').value.toLowerCase();
+    const rows = document.querySelectorAll('#equipeBody tr');
+    let count = 0;
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(input)) {
+            row.style.display = '';
+            count++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    document.getElementById('noResult').style.display = count === 0 ? 'block' : 'none';
+}
+</script>
 </body>
 </html>

@@ -14,11 +14,64 @@
         ⚠️ <span th:text="${errorMessage}"></span>
     </div>
 
+    <!-- FILTRES -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:1rem;margin-bottom:1.5rem">
+
+        <!-- Par date -->
+        <div>
+            <label style="color:#666;font-size:0.8rem;letter-spacing:1px;display:block;margin-bottom:0.4rem">
+                📅 DATE
+            </label>
+            <input type="date" id="filtreDate"
+                   onchange="filtrerMatchs()"
+                   style="width:100%;padding:0.7rem;background:#111;border:1px solid #333;
+                          color:#fff;border-radius:8px;font-size:0.9rem;box-sizing:border-box"/>
+        </div>
+
+        <!-- Par phase -->
+        <div>
+            <label style="color:#666;font-size:0.8rem;letter-spacing:1px;display:block;margin-bottom:0.4rem">
+                🏆 PHASE
+            </label>
+            <select id="filtrePhase" onchange="filtrerMatchs()"
+                    style="width:100%;padding:0.7rem;background:#111;border:1px solid #333;
+                           color:#fff;border-radius:8px;font-size:0.9rem;box-sizing:border-box">
+                <option value="">Toutes les phases</option>
+                <option value="GROUPE">Groupe</option>
+                <option value="ROUND_16">Round of 16</option>
+                <option value="QUART">Quart de finale</option>
+                <option value="DEMI">Demi-finale</option>
+                <option value="TROISIEME">3ème Place</option>
+                <option value="FINALE">Finale</option>
+            </select>
+        </div>
+
+        <!-- Par équipe -->
+        <div>
+            <label style="color:#666;font-size:0.8rem;letter-spacing:1px;display:block;margin-bottom:0.4rem">
+                🔍 ÉQUIPE
+            </label>
+            <input type="text" id="filtreEquipe"
+                   placeholder="Nom d'équipe..."
+                   oninput="filtrerMatchs()"
+                   style="width:100%;padding:0.7rem;background:#111;border:1px solid #333;
+                          color:#fff;border-radius:8px;font-size:0.9rem;box-sizing:border-box"/>
+        </div>
+
+        <!-- Reset -->
+        <div style="display:flex;align-items:flex-end">
+            <button onclick="resetFiltres()" class="btn btn-secondary">
+                ✕ Reset
+            </button>
+        </div>
+
+    </div>
+
     <div th:if="${#lists.isEmpty(matchs)}" class="empty-state">
         Aucun match pour le moment.
     </div>
 
-    <table th:unless="${#lists.isEmpty(matchs)}">
+    <table th:unless="${#lists.isEmpty(matchs)}" id="matchTable">
         <thead>
             <tr>
                 <th>#</th>
@@ -31,8 +84,11 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-            <tr th:each="m, i : ${matchs}">
+        <tbody id="matchBody">
+            <tr th:each="m, i : ${matchs}"
+                th:attr="data-date=${m.dateMatch},
+                         data-phase=${m.phase},
+                         data-equipes=${m.equipeDomicile.nom + ' ' + m.equipeExterieur.nom}">
                 <td th:text="${i.count}"></td>
                 <td th:text="${m.equipeDomicile.nom}"></td>
                 <td>
@@ -56,15 +112,12 @@
                 </td>
                 <td>
                     <div class="actions" style="display:flex;flex-wrap:nowrap;gap:0.5rem">
-                        <!-- Score — PREVU moana -->
                         <a th:if="${m.statut.name() == 'PREVU'}"
                            th:href="@{/matchs/{id}/score(id=${m.id})}"
                            class="btn btn-primary">Score</a>
-                        <!-- ✅ Stats — TERMINE moana -->
                         <a th:if="${m.statut.name() == 'TERMINE'}"
                            th:href="@{/statistiques/match/{id}(id=${m.id})}"
                            class="btn btn-secondary">Stats</a>
-                        <!-- Supprimer -->
                         <a th:href="@{/matchs/{id}/delete(id=${m.id})}"
                            class="btn btn-danger"
                            onclick="return confirm('Voulez-vous supprimer ce match ?')">Supprimer</a>
@@ -73,6 +126,48 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Aucun résultat -->
+    <div id="noResult" style="display:none;text-align:center;color:#666;padding:2rem">
+        Aucun match trouvé pour ces critères
+    </div>
+
 </div>
+
+<script>
+function filtrerMatchs() {
+    const date = document.getElementById('filtreDate').value;
+    const phase = document.getElementById('filtrePhase').value.toLowerCase();
+    const equipe = document.getElementById('filtreEquipe').value.toLowerCase();
+    const rows = document.querySelectorAll('#matchBody tr');
+    let count = 0;
+
+    rows.forEach(row => {
+        const rowDate = row.getAttribute('data-date') || '';
+        const rowPhase = row.getAttribute('data-phase').toLowerCase() || '';
+        const rowEquipes = row.getAttribute('data-equipes').toLowerCase() || '';
+
+        const matchDate = date === '' || rowDate === date;
+        const matchPhase = phase === '' || rowPhase === phase;
+        const matchEquipe = equipe === '' || rowEquipes.includes(equipe);
+
+        if (matchDate && matchPhase && matchEquipe) {
+            row.style.display = '';
+            count++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    document.getElementById('noResult').style.display = count === 0 ? 'block' : 'none';
+}
+
+function resetFiltres() {
+    document.getElementById('filtreDate').value = '';
+    document.getElementById('filtrePhase').value = '';
+    document.getElementById('filtreEquipe').value = '';
+    filtrerMatchs();
+}
+</script>
 </body>
 </html>

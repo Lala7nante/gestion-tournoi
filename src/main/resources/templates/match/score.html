@@ -28,64 +28,48 @@
             </div>
 
             <!-- STATS PAR EQUIPE -->
-            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">STATISTIQUES DU MATCH</h2>
-            <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-bottom:1.5rem">
+            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem;margin-top:1.5rem">
+                STATISTIQUES DU MATCH
+            </h2>
 
-                <!-- Labels centre -->
-                <div></div>
-                <div style="display:flex;flex-direction:column;gap:0.8rem;text-align:center">
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🎯 Tirs</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🎯 Tirs Cadrés</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">⚽ Possession (%)</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🔄 Passes</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">⚠️ Fautes</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🟡 Cartons Jaunes</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🔴 Cartons Rouges</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🔲 Corners</span>
-                    <span style="color:#00c8ff;font-size:0.8rem;letter-spacing:1px">🚩 Hors-Jeu</span>
-                </div>
-                <div></div>
-            </div>
+            <div style="display:grid;grid-template-columns:1fr 200px 1fr;gap:0.8rem;align-items:center">
 
-            <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:start">
-                <!-- Domicile -->
-                <div style="display:flex;flex-direction:column;gap:0.8rem">
-                    <input type="number" name="tirsDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="tirsCadresDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="possessionDomicile" min="0" max="100" value="50" style="text-align:center"/>
-                    <input type="number" name="passesDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="fautesDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="cartonsJaunesDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="cartonsRougesDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="cornersDomicile" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="horsJeuDomicile" min="0" value="0" style="text-align:center"/>
-                </div>
+                <input type="number" name="tirsDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Tirs</div>
+                <input type="number" name="tirsExterieur" min="0" value="0" style="text-align:center"/>
 
-                <!-- Labels centre -->
-                <div style="display:flex;flex-direction:column;gap:0.8rem;text-align:center;padding-top:0.5rem">
-                    <span style="color:#00c8ff;font-size:0.8rem">🎯 Tirs</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">🎯 Tirs Cadrés</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">⚽ Possession</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">🔄 Passes</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">⚠️ Fautes</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">🟡 C.Jaunes</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">🔴 C.Rouges</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">🔲 Corners</span>
-                    <span style="color:#00c8ff;font-size:0.8rem">🚩 Hors-Jeu</span>
-                </div>
+                <input type="number" name="tirsCadresDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Tirs Cadrés</div>
+                <input type="number" name="tirsCadresExterieur" min="0" value="0" style="text-align:center"/>
 
-                <!-- Extérieur -->
-                <div style="display:flex;flex-direction:column;gap:0.8rem">
-                    <input type="number" name="tirsExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="tirsCadresExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="possessionExterieur" min="0" max="100" value="50" style="text-align:center"/>
-                    <input type="number" name="passesExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="fautesExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="cartonsJaunesExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="cartonsRougesExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="cornersExterieur" min="0" value="0" style="text-align:center"/>
-                    <input type="number" name="horsJeuExterieur" min="0" value="0" style="text-align:center"/>
-                </div>
+                <input type="number" name="possessionDomicile" min="0" max="100" value="50" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Possession (%)</div>
+                <input type="number" name="possessionExterieur" min="0" max="100" value="50" style="text-align:center"/>
+
+                <input type="number" name="passesDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Passes</div>
+                <input type="number" name="passesExterieur" min="0" value="0" style="text-align:center"/>
+
+                <input type="number" name="fautesDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Fautes</div>
+                <input type="number" name="fautesExterieur" min="0" value="0" style="text-align:center"/>
+
+                <input type="number" name="cartonsJaunesDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Cartons Jaunes</div>
+                <input type="number" name="cartonsJaunesExterieur" min="0" value="0" style="text-align:center"/>
+
+                <input type="number" name="cartonsRougesDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Cartons Rouges</div>
+                <input type="number" name="cartonsRougesExterieur" min="0" value="0" style="text-align:center"/>
+
+                <input type="number" name="cornersDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Corners</div>
+                <input type="number" name="cornersExterieur" min="0" value="0" style="text-align:center"/>
+
+                <input type="number" name="horsJeuDomicile" min="0" value="0" style="text-align:center"/>
+                <div style="text-align:center;color:#00c8ff;font-size:0.85rem">Hors-Jeu</div>
+                <input type="number" name="horsJeuExterieur" min="0" value="0" style="text-align:center"/>
+
             </div>
 
             <!-- PROLONGATION -->
@@ -132,7 +116,7 @@
                 </div>
             </div>
 
-            <div class="actions">
+            <div class="actions" style="margin-top:1.5rem">
                 <button type="submit" class="btn btn-primary">Confirmer</button>
                 <a th:href="@{/matchs}" class="btn btn-secondary">Annuler</a>
             </div>
