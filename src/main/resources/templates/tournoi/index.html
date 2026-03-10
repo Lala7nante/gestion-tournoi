@@ -6,6 +6,12 @@
     <div class="container">
         <div class="header-row">
             <h1>🏆Tournois</h1>
+            <div th:if="${errorMessage}"
+            style="background:#8b1a2e;border:1px solid #c0253f;color:#ff6b8a;
+            padding:0.8rem 1.2rem;border-radius:6px;margin-bottom:1rem;
+            font-weight:700;letter-spacing:1px;">
+           ⚠️ <span th:text="${errorMessage}"></span>
+            </div>
             <a href="/tournois/new" class="btn btn-primary">+ Nouveau Tournoi</a>
         </div>
 

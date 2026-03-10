@@ -7,8 +7,9 @@
     <div class="header-row">
         <h1>⚽ Matchs</h1>
         <a href="/matchs/new" class="btn btn-primary">+ Nouveau Match</a>
+        <a href="/matchs/tirage" class="btn btn-primary">Tirage</a>
     </div>
-
+     
     <div th:if="${errorMessage}" class="badge badge-red"
          style="padding:1rem;margin-bottom:1rem;display:block;font-size:1rem">
         ⚠️ <span th:text="${errorMessage}"></span>

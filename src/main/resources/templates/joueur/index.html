@@ -5,25 +5,22 @@
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <div class="header-row">
-        <h1> Joueurs — <span th:text="${equipe.nom}"></span></h1>
+        <h1>Joueurs — <span th:text="${equipe.nom}"></span></h1>
         <div class="actions">
             <a th:href="@{/equipes/{id}/joueurs/new(id=${equipe.id})}" class="btn btn-primary">+ Ajouter Joueur</a>
-            <!-- ✅ Retour ovaina -->
             <a th:href="@{/equipes}" class="btn btn-secondary">← Retour</a>
         </div>
     </div>
-
     <div th:if="${#lists.isEmpty(joueurs)}" class="empty-state">
         Aucun joueur pour l'instant.
     </div>
-
     <table th:if="${!#lists.isEmpty(joueurs)}">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Nom</th>
                 <th>Prénom</th>
-                <th>Age</th>
+                <th>Numéro</th>
                 <th>Poste</th>
                 <th>Actions</th>
             </tr>
@@ -33,7 +30,7 @@
                 <td th:text="${i.count}"></td>
                 <td th:text="${j.nom}"></td>
                 <td th:text="${j.prenom}"></td>
-                <td th:text="${j.age}"></td>
+                <td th:text="${j.numero}"></td>
                 <td>
                     <span class="badge badge-cyan" th:text="${j.poste}"></span>
                 </td>

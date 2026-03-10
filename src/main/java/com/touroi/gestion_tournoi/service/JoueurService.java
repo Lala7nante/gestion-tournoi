@@ -16,40 +16,40 @@ public class JoueurService {
     @Autowired
     private EquipeService equipeService;
 
-    // Mijery joueur rehetra amin'ny ekipa
+    // Lister les joueurs d'une équipe
     public List<Joueur> findByEquipe(Long equipeId) {
         return joueurRepository.findByEquipeId(equipeId);
     }
 
-    // Mijery joueur rehetra
+    // Lister tous les joueurs
     public List<Joueur> findAll() {
         return joueurRepository.findAll();
     }
 
-    // Mijery joueur iray
+    // Trouver un joueur
     public Joueur findById(Long id) {
         return joueurRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Joueur tsy hita!"));
+                .orElseThrow(() -> new RuntimeException("Joueur introuvable !"));
     }
 
-    // Manampy joueur
+    // Ajouter un joueur
     public Joueur save(Joueur joueur, Long equipeId) {
         Equipe equipe = equipeService.findById(equipeId);
         joueur.setEquipe(equipe);
         return joueurRepository.save(joueur);
     }
 
-    // Manova joueur
+    // Modifier un joueur
     public Joueur update(Long id, Joueur joueur) {
         Joueur existing = findById(id);
         existing.setNom(joueur.getNom());
         existing.setPrenom(joueur.getPrenom());
-        existing.setAge(joueur.getAge());
+        existing.setNumero(joueur.getNumero());
         existing.setPoste(joueur.getPoste());
         return joueurRepository.save(existing);
     }
 
-    // Mamafa joueur
+    // Supprimer un joueur
     public void delete(Long id) {
         joueurRepository.deleteById(id);
     }

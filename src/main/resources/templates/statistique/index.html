@@ -6,7 +6,7 @@
 <div class="container">
     <h1>📊 Statistiques</h1>
 
-    <!-- Choix Tournoi -->
+    <!-- Choix Tournoi — redirige directement vers stats tournoi -->
     <div th:each="t : ${tournois}" class="card" style="margin-bottom:1rem">
         <div class="header-row">
             <h2 th:text="${t.nom}"></h2>
@@ -15,31 +15,6 @@
         </div>
     </div>
 
-    <!-- Liste Joueurs -->
-    <h2 style="margin-top:2rem">Statistiques joueurs</h2>
-    <table th:unless="${#lists.isEmpty(joueurs)}">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Joueur</th>
-                <th>Equipe</th>
-                <th>Poste</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="j, i : ${joueurs}">
-                <td th:text="${i.count}"></td>
-                <td th:text="${j.prenom} + ' ' + ${j.nom}"></td>
-                <td th:text="${j.equipe.nom}"></td>
-                <td><span class="badge badge-cyan" th:text="${j.poste}"></span></td>
-                <td>
-                    <a th:href="@{/statistiques/joueur/{id}(id=${j.id})}"
-                       class="btn btn-primary">Voir Stats</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </div>
 </body>
 </html>

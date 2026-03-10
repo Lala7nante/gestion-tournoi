@@ -26,17 +26,14 @@ public class StatistiqueController {
     @Autowired
     private TournoiService tournoiService;
 
-    
-    // Page principale statistiques
+    // ✅ CORRECTION : redirige directement vers le tournoi
     @GetMapping("/statistiques")
-    public String index(Model model) {
-       model.addAttribute("tournois", tournoiService.findAll());
-       // ✅ Joueurs manana stat ihany — fa tsy rehetra
-       model.addAttribute("joueurs", statistiqueService.findJoueursAvecStats());
-       return "statistique/index";
-     }
+    public String index() {
+        Long tournoiId = tournoiService.findAll().get(0).getId();
+        return "redirect:/statistiques/tournoi/" + tournoiId;
+    }
 
-    // ✅ Classements par tournoi
+    // Classements par tournoi
     @GetMapping("/statistiques/tournoi/{tournoiId}")
     public String byTournoi(@PathVariable Long tournoiId, Model model) {
         model.addAttribute("tournoi", tournoiService.findById(tournoiId));
@@ -44,7 +41,8 @@ public class StatistiqueController {
         model.addAttribute("topPasseurs", statistiqueService.getTopPasseurs(tournoiId));
         model.addAttribute("topCartons", statistiqueService.getTopCartons(tournoiId));
         model.addAttribute("hommesDuMatch", statistiqueService.getHommesDuMatch(tournoiId));
-       model.addAttribute("meilleurClub", statistiqueService.getMeilleurClub(tournoiId));
+        model.addAttribute("meilleurClub", statistiqueService.getMeilleurClub(tournoiId));
+        model.addAttribute("joueurs", statistiqueService.findJoueursAvecStats()); // ✅ AJOUT
         return "statistique/tournoi";
     }
 
@@ -76,17 +74,17 @@ public class StatistiqueController {
     // Sauvegarder statistique
     @PostMapping("/statistiques")
     public String save(@ModelAttribute Statistique stat,
-                   @RequestParam Long joueurId,
-                   @RequestParam Long matchId,
-                   RedirectAttributes redirectAttributes) {
-         try {
-              statistiqueService.save(stat, joueurId, matchId);
+                       @RequestParam Long joueurId,
+                       @RequestParam Long matchId,
+                       RedirectAttributes redirectAttributes) {
+        try {
+            statistiqueService.save(stat, joueurId, matchId);
         } catch (RuntimeException e) {
-             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-         return "redirect:/statistiques/new";
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/statistiques/new";
         }
-         return "redirect:/statistiques/match/" + matchId;
-      }
+        return "redirect:/statistiques/match/" + matchId;
+    }
 
     // Supprimer statistique
     @GetMapping("/statistiques/{id}/delete")

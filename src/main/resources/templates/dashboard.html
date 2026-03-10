@@ -8,6 +8,38 @@
 
     <div class="dashboard-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
 
+        <!-- Champions — EN PREMIER, pleine largeur -->
+        <div class="card full-width" style="grid-column:1/3">
+            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem">
+                🏆 PALMARÈS
+            </h2>
+            <div th:if="${champions == null or #lists.isEmpty(champions)}"
+                 style="color:#666;text-align:center;padding:1rem">
+                Tournoi pas encore terminé
+            </div>
+            <div th:unless="${champions == null or #lists.isEmpty(champions)}"
+                 style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+                <div th:each="c : ${champions}"
+                     style="display:flex;align-items:center;gap:1.5rem;
+                            padding:1.2rem;border-radius:8px;background:#111;
+                            border:1px solid #222">
+                    <div style="font-size:2.5rem;min-width:50px;text-align:center"
+                         th:text="${c[0] == '🏆 Champion'} ? '🥇' :
+                                   (${c[0] == '🥈 Finaliste'} ? '🥈' : '🥉')">
+                    </div>
+                    <div>
+                        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#00c8ff"
+                             th:text="${c[1]}"></div>
+                        <div style="font-size:0.8rem;letter-spacing:1px;margin-top:0.2rem"
+                             th:style="${c[0] == '🏆 Champion'} ? 'color:#ffd700' :
+                                        (${c[0] == '🥈 Finaliste'} ? 'color:#c0c0c0' : 'color:#cd7f32')"
+                             th:text="${c[0]}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Derniers résultats -->
         <div class="card">
             <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">
@@ -91,41 +123,9 @@
             </div>
         </div>
 
-        <!-- Champions — pleine largeur -->
-        <div class="card full-width" style="grid-column:1/3">
-            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem">
-                🏆 PALMARÈS
-            </h2>
-            <div th:if="${champions == null or #lists.isEmpty(champions)}"
-                 style="color:#666;text-align:center;padding:1rem">
-                Tournoi pas encore terminé
-            </div>
-            <div th:unless="${champions == null or #lists.isEmpty(champions)}"
-                 style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
-                <div th:each="c : ${champions}"
-                     style="display:flex;align-items:center;gap:1.5rem;
-                            padding:1.2rem;border-radius:8px;background:#111;
-                            border:1px solid #222">
-                    <div style="font-size:2.5rem;min-width:50px;text-align:center"
-                         th:text="${c[0] == '🏆 Champion'} ? '🥇' :
-                                   (${c[0] == '🥈 Finaliste'} ? '🥈' : '🥉')">
-                    </div>
-                    <div>
-                        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#00c8ff"
-                             th:text="${c[1]}"></div>
-                        <div style="font-size:0.8rem;letter-spacing:1px;margin-top:0.2rem"
-                             th:style="${c[0] == '🏆 Champion'} ? 'color:#ffd700' :
-                                        (${c[0] == '🥈 Finaliste'} ? 'color:#c0c0c0' : 'color:#cd7f32')"
-                             th:text="${c[0]}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <!-- Stats générales — farany -->
+    <!-- Stats générales -->
     <div class="stats-grid" style="margin-top:1.5rem">
         <div class="stat-card">
             <div class="number" th:text="${nbTournois}">0</div>

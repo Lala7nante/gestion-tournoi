@@ -20,7 +20,7 @@ public class Joueur {
     @Column(nullable = false)
     private String prenom;
 
-    private int age;
+    private int numero;
 
     @Enumerated(EnumType.STRING)
     private Poste poste;

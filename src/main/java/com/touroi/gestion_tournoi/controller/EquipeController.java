@@ -12,11 +12,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class EquipeController {
 
-    @Autowired
-    private EquipeService equipeService;
-
-    @Autowired
-    private GroupeService groupeService;
+    @Autowired private EquipeService equipeService;
+    @Autowired private GroupeService groupeService;
 
     // Lister toutes les équipes
     @GetMapping("/equipes")
@@ -25,7 +22,68 @@ public class EquipeController {
         return "equipe/index_all";
     }
 
-    // Formulaire nouvelle équipe
+    // Lister les équipes d'un groupe
+    @GetMapping("/groupes/{groupeId}/equipes")
+    public String findByGroupe(@PathVariable Long groupeId, Model model) {
+        model.addAttribute("equipes", equipeService.findByGroupe(groupeId));
+        model.addAttribute("groupe", groupeService.findById(groupeId));
+        return "equipe/index";
+    }
+
+    // Formulaire nouvelle équipe (depuis groupe)
+    @GetMapping("/groupes/{groupeId}/equipes/new")
+    public String newForm(@PathVariable Long groupeId, Model model) {
+        model.addAttribute("equipe", new Equipe());
+        model.addAttribute("groupe", groupeService.findById(groupeId));
+        return "equipe/form";
+    }
+
+    // Sauvegarder nouvelle équipe (depuis groupe)
+    @PostMapping("/groupes/{groupeId}/equipes")
+    public String save(@PathVariable Long groupeId,
+                       @ModelAttribute Equipe equipe,
+                       RedirectAttributes redirectAttributes) {
+        try {
+            equipeService.save(equipe, groupeId);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/groupes/" + groupeId + "/equipes/new";
+        }
+        return "redirect:/groupes/" + groupeId + "/equipes";
+    }
+
+    // Formulaire modifier équipe (depuis groupe)
+    @GetMapping("/groupes/{groupeId}/equipes/{id}/edit")
+    public String editForm(@PathVariable Long groupeId,
+                           @PathVariable Long id, Model model) {
+        model.addAttribute("equipe", equipeService.findById(id));
+        model.addAttribute("groupe", groupeService.findById(groupeId));
+        return "equipe/form";
+    }
+
+    // Modifier équipe (depuis groupe)
+    @PostMapping("/groupes/{groupeId}/equipes/{id}")
+    public String update(@PathVariable Long groupeId,
+                         @PathVariable Long id,
+                         @ModelAttribute Equipe equipe) {
+        equipeService.update(id, equipe);
+        return "redirect:/groupes/" + groupeId + "/equipes";
+    }
+
+    // Supprimer équipe (depuis groupe)
+    @GetMapping("/groupes/{groupeId}/equipes/{id}/delete")
+    public String delete(@PathVariable Long groupeId,
+                         @PathVariable Long id,
+                         RedirectAttributes redirectAttributes) {
+        try {
+            equipeService.delete(id);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/groupes/" + groupeId + "/equipes";
+    }
+
+    // Formulaire nouvelle équipe (global)
     @GetMapping("/equipes/new")
     public String newFormGlobal(Model model) {
         model.addAttribute("equipe", new Equipe());
@@ -33,7 +91,7 @@ public class EquipeController {
         return "equipe/form_global";
     }
 
-    // Sauvegarder nouvelle équipe
+    // Sauvegarder nouvelle équipe (global)
     @PostMapping("/equipes")
     public String saveGlobal(@ModelAttribute Equipe equipe,
                              @RequestParam Long groupeId,
@@ -47,7 +105,7 @@ public class EquipeController {
         return "redirect:/equipes";
     }
 
-    // Formulaire modifier équipe
+    // Formulaire modifier équipe (global)
     @GetMapping("/equipes/{id}/edit")
     public String editFormGlobal(@PathVariable Long id, Model model) {
         model.addAttribute("equipe", equipeService.findById(id));
@@ -55,7 +113,7 @@ public class EquipeController {
         return "equipe/form_global";
     }
 
-    // Modifier équipe
+    // Modifier équipe (global)
     @PostMapping("/equipes/{id}")
     public String updateGlobal(@PathVariable Long id,
                                @ModelAttribute Equipe equipe) {
@@ -63,10 +121,15 @@ public class EquipeController {
         return "redirect:/equipes";
     }
 
-    // Supprimer équipe
+    // Supprimer équipe (global)
     @GetMapping("/equipes/{id}/delete")
-    public String deleteGlobal(@PathVariable Long id) {
-        equipeService.delete(id);
+    public String deleteGlobal(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            equipeService.delete(id);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/equipes";
     }
 }

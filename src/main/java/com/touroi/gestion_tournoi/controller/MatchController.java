@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
 
 @Controller
 public class MatchController {
@@ -18,14 +21,12 @@ public class MatchController {
     @Autowired
     private EquipeService equipeService;
 
-    // Lister tous les matchs
     @GetMapping("/matchs")
     public String findAll(Model model) {
         model.addAttribute("matchs", matchService.findAll());
         return "match/index";
     }
 
-    // Formulaire nouveau match
     @GetMapping("/matchs/new")
     public String newForm(Model model) {
         model.addAttribute("match", new MatchFootball());
@@ -34,7 +35,6 @@ public class MatchController {
         return "match/form";
     }
 
-    // Créer match
     @PostMapping("/matchs")
     public String save(@ModelAttribute MatchFootball match,
                        @RequestParam Long domId,
@@ -49,14 +49,12 @@ public class MatchController {
         return "redirect:/matchs";
     }
 
-    // Formulaire score
     @GetMapping("/matchs/{id}/score")
     public String scoreForm(@PathVariable Long id, Model model) {
         model.addAttribute("match", matchService.findById(id));
         return "match/score";
     }
 
-    // Enregistrer score + stats
     @PostMapping("/matchs/{id}/score")
     public String enregistrerScore(
             @PathVariable Long id,
@@ -68,7 +66,6 @@ public class MatchController {
             @RequestParam(defaultValue = "false") boolean penalty,
             @RequestParam(defaultValue = "0") int scorePenDom,
             @RequestParam(defaultValue = "0") int scorePenExt,
-            // ✅ Stats Domicile
             @RequestParam(defaultValue = "0") int tirsDomicile,
             @RequestParam(defaultValue = "0") int tirsCadresDomicile,
             @RequestParam(defaultValue = "50") int possessionDomicile,
@@ -78,7 +75,6 @@ public class MatchController {
             @RequestParam(defaultValue = "0") int cartonsRougesDomicile,
             @RequestParam(defaultValue = "0") int cornersDomicile,
             @RequestParam(defaultValue = "0") int horsJeuDomicile,
-            // ✅ Stats Extérieur
             @RequestParam(defaultValue = "0") int tirsExterieur,
             @RequestParam(defaultValue = "0") int tirsCadresExterieur,
             @RequestParam(defaultValue = "50") int possessionExterieur,
@@ -107,7 +103,6 @@ public class MatchController {
         return "redirect:/matchs";
     }
 
-    // Supprimer match
     @GetMapping("/matchs/{id}/delete")
     public String delete(@PathVariable Long id,
                          RedirectAttributes redirectAttributes) {
@@ -118,36 +113,100 @@ public class MatchController {
         }
         return "redirect:/matchs";
     }
+
     @PostMapping("/matchs/{id}/stats")
-public String updateStats(
-        @PathVariable Long id,
-        @RequestParam int tirsDomicile,
-        @RequestParam int tirsCadresDomicile,
-        @RequestParam int possessionDomicile,
-        @RequestParam int passesDomicile,
-        @RequestParam int fautesDomicile,
-        @RequestParam int cartonsJaunesDomicile,
-        @RequestParam int cartonsRougesDomicile,
-        @RequestParam int cornersDomicile,
-        @RequestParam int horsJeuDomicile,
-        @RequestParam int tirsExterieur,
-        @RequestParam int tirsCadresExterieur,
-        @RequestParam int possessionExterieur,
-        @RequestParam int passesExterieur,
-        @RequestParam int fautesExterieur,
-        @RequestParam int cartonsJaunesExterieur,
-        @RequestParam int cartonsRougesExterieur,
-        @RequestParam int cornersExterieur,
-        @RequestParam int horsJeuExterieur) {
+    public String updateStats(
+            @PathVariable Long id,
+            @RequestParam int tirsDomicile,
+            @RequestParam int tirsCadresDomicile,
+            @RequestParam int possessionDomicile,
+            @RequestParam int passesDomicile,
+            @RequestParam int fautesDomicile,
+            @RequestParam int cartonsJaunesDomicile,
+            @RequestParam int cartonsRougesDomicile,
+            @RequestParam int cornersDomicile,
+            @RequestParam int horsJeuDomicile,
+            @RequestParam int tirsExterieur,
+            @RequestParam int tirsCadresExterieur,
+            @RequestParam int possessionExterieur,
+            @RequestParam int passesExterieur,
+            @RequestParam int fautesExterieur,
+            @RequestParam int cartonsJaunesExterieur,
+            @RequestParam int cartonsRougesExterieur,
+            @RequestParam int cornersExterieur,
+            @RequestParam int horsJeuExterieur) {
 
-    matchService.updateStats(id,
-            tirsDomicile, tirsCadresDomicile, possessionDomicile,
-            passesDomicile, fautesDomicile, cartonsJaunesDomicile,
-            cartonsRougesDomicile, cornersDomicile, horsJeuDomicile,
-            tirsExterieur, tirsCadresExterieur, possessionExterieur,
-            passesExterieur, fautesExterieur, cartonsJaunesExterieur,
-            cartonsRougesExterieur, cornersExterieur, horsJeuExterieur);
+        matchService.updateStats(id,
+                tirsDomicile, tirsCadresDomicile, possessionDomicile,
+                passesDomicile, fautesDomicile, cartonsJaunesDomicile,
+                cartonsRougesDomicile, cornersDomicile, horsJeuDomicile,
+                tirsExterieur, tirsCadresExterieur, possessionExterieur,
+                passesExterieur, fautesExterieur, cartonsJaunesExterieur,
+                cartonsRougesExterieur, cornersExterieur, horsJeuExterieur);
 
-    return "redirect:/statistiques/match/" + id;
-}
+        return "redirect:/statistiques/match/" + id;
+    }
+
+    @GetMapping("/matchs/tirage")
+    public String tirageForm(Model model) {
+        List<MatchFootball> quart    = matchService.findByPhase(MatchFootball.Phase.QUART);
+        List<MatchFootball> round16  = matchService.findByPhase(MatchFootball.Phase.ROUND_16);
+        List<MatchFootball> demi     = matchService.findByPhase(MatchFootball.Phase.DEMI);
+        List<MatchFootball> finale   = matchService.findByPhase(MatchFootball.Phase.FINALE);
+        List<MatchFootball> troisieme = matchService.findByPhase(MatchFootball.Phase.TROISIEME);
+
+        // Tirage voalohany efa nisy ve?
+        boolean tirageDejaFait = !quart.isEmpty() || !round16.isEmpty();
+
+        // Phase ankehitriny miseho
+        List<MatchFootball> matchsAnkehitriny;
+        if (!demi.isEmpty())          matchsAnkehitriny = demi;
+        else if (!quart.isEmpty())    matchsAnkehitriny = quart;
+        else if (!round16.isEmpty())  matchsAnkehitriny = round16;
+        else                          matchsAnkehitriny = new ArrayList<>();
+
+        // Mampiseho bouton "phase suivante" ve?
+        boolean tousFinis = !matchsAnkehitriny.isEmpty() && matchsAnkehitriny.stream()
+                .allMatch(m -> m.getStatut() == MatchFootball.Statut.TERMINE);
+        boolean finaleExiste = !finale.isEmpty();
+
+        model.addAttribute("tirageDejaFait", tirageDejaFait);
+        model.addAttribute("matchsAnkehitriny", matchsAnkehitriny);
+        model.addAttribute("matchsDemi", demi);
+        model.addAttribute("matchsFinale", finale);
+        model.addAttribute("matchsTroisieme", troisieme);
+        model.addAttribute("peutGenererSuivante", tousFinis && !finaleExiste);
+        return "match/tirage";
+    }
+
+    @PostMapping("/matchs/tirage")
+    public String lancerTirage(
+            @RequestParam(required = false) LocalDate dateMatch,
+            @RequestParam(required = false) String lieu,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<MatchFootball> matchsGeneres = matchService.genererTirage(dateMatch, lieu);
+            redirectAttributes.addFlashAttribute("successMessage",
+                "✅ Tirage effectué ! " + matchsGeneres.size() + " matchs générés.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/matchs/tirage";
+    }
+
+    // ✅ VAOVAO : Générer phase suivante
+    @PostMapping("/matchs/phase-suivante")
+    public String genererPhaseSuivante(
+            @RequestParam(required = false) LocalDate dateMatch,
+            @RequestParam(required = false) String lieu,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<MatchFootball> matchsGeneres = matchService.genererPhaseManaraka(dateMatch, lieu);
+            redirectAttributes.addFlashAttribute("successMessage",
+                "Phase suivante générée ! " + matchsGeneres.size() + " matchs créés.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/matchs/tirage";
+    }
 }

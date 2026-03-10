@@ -1,12 +1,14 @@
 package com.touroi.gestion_tournoi.service;
 
 import com.touroi.gestion_tournoi.model.Classement;
+import com.touroi.gestion_tournoi.model.Equipe;
 import com.touroi.gestion_tournoi.model.MatchFootball;
 import com.touroi.gestion_tournoi.repository.ClassementRepository;
 import com.touroi.gestion_tournoi.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,27 +28,22 @@ public class ClassementService {
     @Transactional
     public void updateClassement(MatchFootball match) {
         Long groupeId = match.getEquipeDomicile().getGroupe().getId();
-
         Classement cDom = classementRepository
                 .findByEquipeIdAndGroupeId(
                         match.getEquipeDomicile().getId(), groupeId)
                 .orElseThrow(() -> new RuntimeException("Classement Dom tsy hita!"));
-
         Classement cExt = classementRepository
                 .findByEquipeIdAndGroupeId(
                         match.getEquipeExterieur().getId(), groupeId)
                 .orElseThrow(() -> new RuntimeException("Classement Ext tsy hita!"));
 
-        // ✅ Reset complet — tsy cumul intsony
         resetClassement(cDom);
         resetClassement(cExt);
 
-        // ✅ Recalcul depuis tous les matchs TERMINE
         List<MatchFootball> matchsDom = matchRepository
                 .findByEquipeDomicileIdOrEquipeExterieurId(
                         match.getEquipeDomicile().getId(),
                         match.getEquipeDomicile().getId());
-
         List<MatchFootball> matchsExt = matchRepository
                 .findByEquipeDomicileIdOrEquipeExterieurId(
                         match.getEquipeExterieur().getId(),
@@ -57,7 +54,6 @@ public class ClassementService {
                 calculerStats(cDom, m, match.getEquipeDomicile().getId());
             }
         }
-
         for (MatchFootball m : matchsExt) {
             if (m.getStatut() == MatchFootball.Statut.TERMINE) {
                 calculerStats(cExt, m, match.getEquipeExterieur().getId());
@@ -94,5 +90,24 @@ public class ClassementService {
             c.setPoints(c.getPoints() + 1);
             c.setNuls(c.getNuls() + 1);
         }
+    }
+
+    // ✅ VAOVAO
+    public List<Equipe> getEquipesQualifiees() {
+        List<Long> groupeIds = classementRepository.findDistinctGroupeIds();
+        List<Equipe> qualifiees = new ArrayList<>();
+
+        for (Long groupeId : groupeIds) {
+            List<Classement> classementGroupe = classementRepository
+                    .findByGroupeIdOrderByPointsDescButsMarquesDesc(groupeId);
+
+            if (classementGroupe.size() >= 2) {
+                qualifiees.add(classementGroupe.get(0).getEquipe());
+                qualifiees.add(classementGroupe.get(1).getEquipe());
+            } else if (classementGroupe.size() == 1) {
+                qualifiees.add(classementGroupe.get(0).getEquipe());
+            }
+        }
+        return qualifiees;
     }
 }

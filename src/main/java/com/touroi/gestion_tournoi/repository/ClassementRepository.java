@@ -2,6 +2,7 @@ package com.touroi.gestion_tournoi.repository;
 
 import com.touroi.gestion_tournoi.model.Classement;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +15,7 @@ public interface ClassementRepository extends JpaRepository<Classement, Long> {
     Optional<Classement> findByEquipeId(Long equipeId);
 
     Optional<Classement> findByEquipeIdAndGroupeId(Long equipeId, Long groupeId);
+
+    @Query("SELECT DISTINCT c.groupe.id FROM Classement c")
+    List<Long> findDistinctGroupeIds();
 }

@@ -7,7 +7,6 @@
 
     <div class="header-row">
         <h1>📊 Statistiques — <span th:text="${tournoi.nom}"></span></h1>
-        <a href="/statistiques" class="btn btn-secondary">← Retour</a>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
@@ -62,7 +61,7 @@
 
         <!-- Top Cartons -->
         <div class="card">
-            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">🟡🔴CARTONS</h2>
+            <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">🟡🔴 CARTONS</h2>
             <table>
                 <thead>
                     <tr>
@@ -85,7 +84,7 @@
             </table>
         </div>
 
-        <!-- Homme du Match -->
+        <!-- Homme du Tournoi -->
         <div class="card">
             <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">🏆 HOMME DU TOURNOI</h2>
             <table>
@@ -112,29 +111,59 @@
     </div>
 
     <!-- Meilleur Club -->
-<div class="card" style="margin-top:1.5rem">
-    <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">🏅 MEILLEUR CLUB</h2>
-    <div th:if="${#lists.isEmpty(meilleurClub)}"
-         style="color:#666;text-align:center;padding:1rem">
-        Tournoi pas encore terminé
+    <div class="card" style="margin-top:1.5rem">
+        <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">🏅 MEILLEUR CLUB</h2>
+        <div th:if="${#lists.isEmpty(meilleurClub)}"
+             style="color:#666;text-align:center;padding:1rem">
+            Tournoi pas encore terminé
+        </div>
+        <table th:unless="${#lists.isEmpty(meilleurClub)}">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Club</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="row : ${meilleurClub}">
+                    <td th:text="${row[0]}" style="font-weight:700"></td>
+                    <td th:text="${row[1]}" style="color:#00c8ff;font-weight:700"></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <table th:unless="${#lists.isEmpty(meilleurClub)}">
-        <thead>
-            <tr>
-                <th>Rang</th>
-                <th>Club</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="row : ${meilleurClub}">
-                <td th:text="${row[0]}"
-                    style="font-weight:700"></td>
-                <td th:text="${row[1]}"
-                    style="color:#00c8ff;font-weight:700"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+
+    <!-- ✅ NOUVEAU : Liste des joueurs avec lien vers leurs stats -->
+    <div class="card" style="margin-top:1.5rem">
+        <h2 style="color:#00c8ff;font-size:1rem;letter-spacing:2px;margin-bottom:1rem">👤 STATISTIQUES JOUEURS</h2>
+        <div th:if="${#lists.isEmpty(joueurs)}"
+             style="color:#666;text-align:center;padding:1rem">
+            Aucun joueur trouvé
+        </div>
+        <table th:unless="${#lists.isEmpty(joueurs)}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Joueur</th>
+                    <th>Equipe</th>
+                    <th>Poste</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="j, i : ${joueurs}">
+                    <td th:text="${i.count}"></td>
+                    <td th:text="${j.prenom} + ' ' + ${j.nom}"></td>
+                    <td th:text="${j.equipe.nom}"></td>
+                    <td><span class="badge badge-cyan" th:text="${j.poste}"></span></td>
+                    <td>
+                        <a th:href="@{/statistiques/joueur/{id}(id=${j.id})}"
+                           class="btn btn-primary">Voir Stats</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 </body>

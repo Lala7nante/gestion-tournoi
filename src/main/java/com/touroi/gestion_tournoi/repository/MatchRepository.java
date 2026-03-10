@@ -7,13 +7,14 @@ import java.util.List;
 
 @Repository
 public interface MatchRepository extends JpaRepository<MatchFootball, Long> {
-
     List<MatchFootball> findByPhase(MatchFootball.Phase phase);
-
-    List<MatchFootball> findByEquipeDomicileIdOrEquipeExterieurId(
-            Long domId, Long extId);
+    List<MatchFootball> findByEquipeDomicileIdOrEquipeExterieurId(Long domId, Long extId);
     List<MatchFootball> findByPhaseAndStatut(MatchFootball.Phase phase, MatchFootball.Statut statut);
-
     List<MatchFootball> findByStatutOrderByDateMatchDesc(MatchFootball.Statut statut);
     List<MatchFootball> findByStatutOrderByDateMatchAsc(MatchFootball.Statut statut);
+    List<MatchFootball> findAllByOrderByIdDesc();
+
+    // ✅ NOUVEAU : count pour contourner le cache Hibernate
+    long countByPhase(MatchFootball.Phase phase);
+    long countByPhaseAndStatut(MatchFootball.Phase phase, MatchFootball.Statut statut);
 }

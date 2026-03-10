@@ -5,7 +5,7 @@
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <div class="header-row">
-        <h1>🏟️ Equipes — Groupe <span th:text="${groupe.nom}"></span></h1>
+        <h1>Equipes — Groupe <span th:text="${groupe.nom}"></span></h1>
         <div class="actions">
             <a th:href="@{/groupes/{id}/equipes/new(id=${groupe.id})}" class="btn btn-primary">+ Ajouter Equipe</a>
             <a th:href="@{/tournois/{id}/groupes(id=${groupe.tournoi.id})}" class="btn btn-secondary">← Retour</a>

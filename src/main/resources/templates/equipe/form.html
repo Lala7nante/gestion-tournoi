@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Equipe Form</title></head>
+<head th:replace="~{layout :: head}"></head>
 <body>
+<nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <h1 th:text="${equipe.id == null} ? '+ Nouvelle Equipe' : 'Modifier Equipe'"></h1>
     <div class="card">

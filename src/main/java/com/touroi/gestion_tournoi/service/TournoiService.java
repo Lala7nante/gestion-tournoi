@@ -1,38 +1,43 @@
 package com.touroi.gestion_tournoi.service;
 
+import com.touroi.gestion_tournoi.model.Equipe;
+import com.touroi.gestion_tournoi.model.Groupe;
 import com.touroi.gestion_tournoi.model.Tournoi;
-import com.touroi.gestion_tournoi.repository.TournoiRepository;
+import com.touroi.gestion_tournoi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
 public class TournoiService {
 
-    @Autowired
-    private TournoiRepository tournoiRepository;
+    @Autowired private TournoiRepository tournoiRepository;
+    @Autowired private GroupeRepository groupeRepository;
+    @Autowired private EquipeRepository equipeRepository;
+    @Autowired private MatchRepository matchRepository;
+    @Autowired private ClassementRepository classementRepository;
 
-    // Mijery lista tournoi rehetra
+    // Lister tous les tournois
     public List<Tournoi> findAll() {
         return tournoiRepository.findAll();
     }
 
-    // Mijery tournoi iray
+    // Trouver un tournoi
     public Tournoi findById(Long id) {
         return tournoiRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Tournoi tsy hita!"));
+                .orElseThrow(() -> new RuntimeException("Tournoi introuvable !"));
     }
 
-    // Mamorona tournoi vaovao
+    // Créer un tournoi
     public Tournoi save(Tournoi tournoi) {
-        // Validation: nb_groupes * 4 = multiple de 4
         if (tournoi.getNbGroupes() <= 0) {
-            throw new RuntimeException("Nb groupes tsy mety!");
+            throw new RuntimeException("Le nombre de groupes est invalide !");
         }
         return tournoiRepository.save(tournoi);
     }
 
-    // Manova tournoi
+    // Modifier un tournoi
     public Tournoi update(Long id, Tournoi tournoi) {
         Tournoi existing = findById(id);
         existing.setNom(tournoi.getNom());
@@ -44,8 +49,26 @@ public class TournoiService {
         return tournoiRepository.save(existing);
     }
 
-    // Mamafa tournoi
+    // Supprimer un tournoi (cascade : matchs → classements → équipes → groupes → tournoi)
+    @Transactional
     public void delete(Long id) {
+        List<Groupe> groupes = groupeRepository.findByTournoiId(id);
+
+        for (Groupe groupe : groupes) {
+            List<Equipe> equipes = equipeRepository.findByGroupeId(groupe.getId());
+
+            for (Equipe equipe : equipes) {
+                matchRepository.deleteAll(
+                    matchRepository.findByEquipeDomicileIdOrEquipeExterieurId(
+                        equipe.getId(), equipe.getId()
+                    )
+                );
+                classementRepository.findByEquipeId(equipe.getId())
+                    .ifPresent(classementRepository::delete);
+            }
+            equipeRepository.deleteAll(equipes);
+        }
+        groupeRepository.deleteAll(groupes);
         tournoiRepository.deleteById(id);
     }
 }
