@@ -47,7 +47,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             letter-spacing: 1.5px;
-            text-transform: uppercase;
             padding: 0.4rem 1rem;
             border-radius: 4px;
             transition: all 0.2s;
@@ -373,10 +372,13 @@
 </head>
 <body>
 <nav th:fragment="nav">
-    <span class="brand" style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;
-                 color:var(--cyan);margin-right:auto;letter-spacing:2px;">
-        GESTION TOURNOI
-    </span>
+       <span class="brand flex items-center" style="font-family:'Rajdhani',sans-serif; font-size:1.5rem; margin-right:auto; letter-spacing:1px; text-transform:none; color:var(--text);">
+            <img th:src="@{/images/trophy.svg}" alt="Tournoi" 
+           style="width:24px; height:24px; margin-right:1px; vertical-align:middle; filter: invert(48%) sepia(100%) saturate(500%) hue-rotate(170deg) brightness(100%) contrast(90%);"/>
+       <span>
+           <span style="color:rgb(12, 168, 216); font-size:1.7rem; font-weight:700;">G</span>estion Tournoi
+           </span>
+        </span>
     <a href="/dashboard"    class="nav-link">Dashboard</a>
     <a href="/tournois"     class="nav-link">Tournois</a>
     <a href="/equipes"      class="nav-link">Equipes</a>

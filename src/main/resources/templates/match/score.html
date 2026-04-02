@@ -4,7 +4,11 @@
 <body>
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
-    <h1>⚽ Enregistrer Score</h1>
+    <h1 class="flex items-center">
+    <img th:src="@{/images/ball.svg}" alt="Ball" 
+         style="width:32px; height:32px; margin-right:8px; vertical-align:middle;"/>
+    Enregistrer Score
+    </h1>
     <div class="card">
         <h2 style="text-align:center;margin-bottom:2rem">
             <span th:text="${match.equipeDomicile.nom}"></span>

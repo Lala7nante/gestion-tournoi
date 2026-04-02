@@ -5,7 +5,11 @@
     <nav th:replace="~{layout :: nav}"></nav>
     <div class="container">
         <div class="header-row">
-            <h1>🏆Tournois</h1>
+            <h1 class="flex items-center">
+                <img th:src="@{/images/trophy1.svg}" alt="Trophy" 
+                 style="width:35px; height:35px; vertical-align:middle;"/>
+            Tournois
+            </h1>
             <div th:if="${errorMessage}"
             style="background:#8b1a2e;border:1px solid #c0253f;color:#ff6b8a;
             padding:0.8rem 1.2rem;border-radius:6px;margin-bottom:1rem;

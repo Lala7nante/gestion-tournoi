@@ -5,7 +5,11 @@
 <nav th:replace="~{layout :: nav}"></nav>
 <div class="container">
     <div class="header-row">
-        <h1>⚽ Matchs</h1>
+        <h1 class="flex items-center">
+        <img th:src="@{/images/ball.svg}" alt="Ball"
+         style="width:32px; height:32px; margin-right:8px; vertical-align:middle;"/>
+       Matchs
+    </h1>
         <a href="/matchs/new" class="btn btn-primary">+ Nouveau Match</a>
         <a href="/matchs/tirage" class="btn btn-primary">Tirage</a>
     </div>
@@ -31,9 +35,10 @@
 
         <!-- Par phase -->
         <div>
-            <label style="color:#666;font-size:0.8rem;letter-spacing:1px;display:block;margin-bottom:0.4rem">
-                🏆 PHASE
-            </label>
+            <label style="color:#666;font-size:0.8rem;letter-spacing:1px;display:block;margin-bottom:0.4rem; display:flex; align-items:center; gap:4px;">
+            <img th:src="@{/images/trophy.svg}" alt="Trophy" style="width:15px; height:15px;"/>
+           PHASE
+        </label>
             <select id="filtrePhase" onchange="filtrerMatchs()"
                     style="width:100%;padding:0.7rem;background:#111;border:1px solid #333;
                            color:#fff;border-radius:8px;font-size:0.9rem;box-sizing:border-box">
