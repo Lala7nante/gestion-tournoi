@@ -5,11 +5,12 @@ import com.touroi.gestion_tournoi.repository.*;
 import com.touroi.gestion_tournoi.service.StatistiqueService;
 import com.touroi.gestion_tournoi.service.TournoiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class DashboardController {
 
     @Autowired private TournoiRepository tournoiRepository;
@@ -19,40 +20,38 @@ public class DashboardController {
     @Autowired private StatistiqueService statistiqueService;
     @Autowired private TournoiService tournoiService;
 
-    @GetMapping("/")
-    public String home() { return "redirect:/dashboard"; }
-
+    // GET /api/dashboard
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public Map<String, Object> dashboard() {
+        Map<String, Object> data = new HashMap<>();
 
         // Stats générales
-        model.addAttribute("nbTournois", tournoiRepository.count());
-        model.addAttribute("nbGroupes", groupeRepository.count());
-        model.addAttribute("nbEquipes", equipeRepository.count());
-        model.addAttribute("nbMatchs", matchRepository.count());
+        data.put("nbTournois",  tournoiRepository.count());
+        data.put("nbGroupes",   groupeRepository.count());
+        data.put("nbEquipes",   equipeRepository.count());
+        data.put("nbMatchs",    matchRepository.count());
 
         // Derniers résultats
-        model.addAttribute("derniersResultats",
+        data.put("derniersResultats",
             matchRepository.findByStatutOrderByDateMatchDesc(
                 MatchFootball.Statut.TERMINE).stream().limit(5).toList());
 
         // Prochains matchs
-        model.addAttribute("prochainsMatchs",
+        data.put("prochainsMatchs",
             matchRepository.findByStatutOrderByDateMatchAsc(
                 MatchFootball.Statut.PREVU).stream().limit(5).toList());
 
         // Top buteur + Homme du tournoi + Champions
         tournoiService.findAll().stream().findFirst().ifPresent(t -> {
             var topButeurs = statistiqueService.getTopButeurs(t.getId());
-            var hommes = statistiqueService.getHommesDuMatch(t.getId());
-            if (!topButeurs.isEmpty()) model.addAttribute("topButeur", topButeurs.get(0));
-            if (!hommes.isEmpty()) model.addAttribute("hommeTournoi", hommes.get(0));
+            var hommes     = statistiqueService.getHommesDuMatch(t.getId());
+            var champions  = statistiqueService.getMeilleurClub(t.getId());
 
-            // ✅ Champions — 3 premiers
-            var champions = statistiqueService.getMeilleurClub(t.getId());
-            model.addAttribute("champions", champions);
+            if (!topButeurs.isEmpty()) data.put("topButeur",    topButeurs.get(0));
+            if (!hommes.isEmpty())     data.put("hommeTournoi", hommes.get(0));
+            data.put("champions", champions);
         });
 
-        return "dashboard";
+        return data;
     }
 }

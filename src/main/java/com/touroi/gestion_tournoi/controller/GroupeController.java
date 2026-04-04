@@ -1,46 +1,38 @@
 package com.touroi.gestion_tournoi.controller;
 
 import com.touroi.gestion_tournoi.service.GroupeService;
-import com.touroi.gestion_tournoi.service.TournoiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@Controller
-@RequestMapping("/tournois/{tournoiId}/groupes")
+@RestController
+@RequestMapping("/api/tournois/{tournoiId}/groupes")
 public class GroupeController {
 
-    @Autowired
-    private GroupeService groupeService;
+    @Autowired private GroupeService groupeService;
 
-    @Autowired
-    private TournoiService tournoiService;
 
+    // GET /api/tournois/{tournoiId}/groupes
     @GetMapping
-    public String index(@PathVariable Long tournoiId, Model model) {
-        model.addAttribute("tournoi", tournoiService.findById(tournoiId));
-        model.addAttribute("groupes", groupeService.findByTournoi(tournoiId));
-        return "groupe/index";
+    public ResponseEntity<?> index(@PathVariable Long tournoiId) {
+        return ResponseEntity.ok(groupeService.findByTournoi(tournoiId));
     }
 
-    // ✅ Mampiseho message raha feno ny groupe
+    // POST /api/tournois/{tournoiId}/groupes
     @PostMapping
-    public String save(@PathVariable Long tournoiId,
-                       RedirectAttributes redirectAttributes) {
+    public ResponseEntity<?> save(@PathVariable Long tournoiId) {
         try {
-            groupeService.save(tournoiId);
+            return ResponseEntity.ok(groupeService.save(tournoiId));
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return "redirect:/tournois/" + tournoiId + "/groupes";
     }
 
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable Long tournoiId,
-                         @PathVariable Long id) {
+    // DELETE /api/tournois/{tournoiId}/groupes/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long tournoiId,
+                                     @PathVariable Long id) {
         groupeService.delete(id);
-        return "redirect:/tournois/" + tournoiId + "/groupes";
+        return ResponseEntity.ok("Groupe supprimé");
     }
 }

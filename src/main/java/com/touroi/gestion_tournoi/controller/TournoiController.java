@@ -3,70 +3,49 @@ package com.touroi.gestion_tournoi.controller;
 import com.touroi.gestion_tournoi.model.Tournoi;
 import com.touroi.gestion_tournoi.service.TournoiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
 
-@Controller
-@RequestMapping("/tournois")
+@RestController
+@RequestMapping("/api/tournois")
 public class TournoiController {
 
-    @Autowired
-    private TournoiService tournoiService;
+    @Autowired private TournoiService tournoiService;
 
-    // Lista tournoi rehetra
+    // GET /api/tournois
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("tournois", tournoiService.findAll());
-        return "tournoi/index";
+    public List<Tournoi> index() {
+        return tournoiService.findAll();
     }
 
-    // Formulaire mamorona tournoi
-    @GetMapping("/new")
-    public String newForm(Model model) {
-        model.addAttribute("tournoi", new Tournoi());
-        return "tournoi/form";
+    // GET /api/tournois/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<?> detail(@PathVariable Long id) {
+        return ResponseEntity.ok(tournoiService.findById(id));
     }
 
-    // Mamorona tournoi
+    // POST /api/tournois
     @PostMapping
-    public String save(@ModelAttribute Tournoi tournoi) {
-        tournoiService.save(tournoi);
-        return "redirect:/tournois";
+    public ResponseEntity<?> save(@RequestBody Tournoi tournoi) {
+        return ResponseEntity.ok(tournoiService.save(tournoi));
     }
 
-    // Formulaire manova tournoi
-    @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
-        model.addAttribute("tournoi", tournoiService.findById(id));
-        return "tournoi/form";
+    // PUT /api/tournois/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                     @RequestBody Tournoi tournoi) {
+        return ResponseEntity.ok(tournoiService.update(id, tournoi));
     }
 
-    // Manova tournoi
-    @PostMapping("/{id}")
-    public String update(@PathVariable Long id,
-                         @ModelAttribute Tournoi tournoi) {
-        tournoiService.update(id, tournoi);
-        return "redirect:/tournois";
-    }
-
-    // Mamafa tournoi
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable Long id,
-                     RedirectAttributes redirectAttributes) {
+    // DELETE /api/tournois/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             tournoiService.delete(id);
+            return ResponseEntity.ok("Tournoi supprimé");
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return "redirect:/tournois";
-        }
-
-    // Détails tournoi
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("tournoi", tournoiService.findById(id));
-        return "tournoi/detail";
     }
 }

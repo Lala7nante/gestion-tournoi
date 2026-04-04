@@ -1,96 +1,63 @@
 package com.touroi.gestion_tournoi.controller;
 
 import com.touroi.gestion_tournoi.model.Statistique;
-import com.touroi.gestion_tournoi.service.JoueurService;
-import com.touroi.gestion_tournoi.service.MatchService;
-import com.touroi.gestion_tournoi.service.StatistiqueService;
-import com.touroi.gestion_tournoi.service.TournoiService;
+import com.touroi.gestion_tournoi.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.HashMap;
+import java.util.Map;
 
-@Controller
+@RestController
+@RequestMapping("/api/statistiques")
 public class StatistiqueController {
 
-    @Autowired
-    private StatistiqueService statistiqueService;
+    @Autowired private StatistiqueService statistiqueService;
 
-    @Autowired
-    private JoueurService joueurService;
+    @Autowired private TournoiService tournoiService;
 
-    @Autowired
-    private MatchService matchService;
-
-    @Autowired
-    private TournoiService tournoiService;
-
-    // ✅ CORRECTION : redirige directement vers le tournoi
-    @GetMapping("/statistiques")
-    public String index() {
-        Long tournoiId = tournoiService.findAll().get(0).getId();
-        return "redirect:/statistiques/tournoi/" + tournoiId;
+    // GET /api/statistiques/tournoi/{tournoiId}
+    @GetMapping("/tournoi/{tournoiId}")
+    public Map<String, Object> byTournoi(@PathVariable Long tournoiId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("tournoi",       tournoiService.findById(tournoiId));
+        data.put("topButeurs",    statistiqueService.getTopButeurs(tournoiId));
+        data.put("topPasseurs",   statistiqueService.getTopPasseurs(tournoiId));
+        data.put("topCartons",    statistiqueService.getTopCartons(tournoiId));
+        data.put("hommesDuMatch", statistiqueService.getHommesDuMatch(tournoiId));
+        data.put("meilleurClub",  statistiqueService.getMeilleurClub(tournoiId));
+        data.put("joueurs",       statistiqueService.findJoueursAvecStats());
+        return data;
     }
 
-    // Classements par tournoi
-    @GetMapping("/statistiques/tournoi/{tournoiId}")
-    public String byTournoi(@PathVariable Long tournoiId, Model model) {
-        model.addAttribute("tournoi", tournoiService.findById(tournoiId));
-        model.addAttribute("topButeurs", statistiqueService.getTopButeurs(tournoiId));
-        model.addAttribute("topPasseurs", statistiqueService.getTopPasseurs(tournoiId));
-        model.addAttribute("topCartons", statistiqueService.getTopCartons(tournoiId));
-        model.addAttribute("hommesDuMatch", statistiqueService.getHommesDuMatch(tournoiId));
-        model.addAttribute("meilleurClub", statistiqueService.getMeilleurClub(tournoiId));
-        model.addAttribute("joueurs", statistiqueService.findJoueursAvecStats()); // ✅ AJOUT
-        return "statistique/tournoi";
+    // GET /api/statistiques/joueur/{joueurId}
+    @GetMapping("/joueur/{joueurId}")
+    public ResponseEntity<?> byJoueur(@PathVariable Long joueurId) {
+        return ResponseEntity.ok(statistiqueService.findByJoueur(joueurId));
     }
 
-    // Statistiques par joueur
-    @GetMapping("/statistiques/joueur/{joueurId}")
-    public String byJoueur(@PathVariable Long joueurId, Model model) {
-        model.addAttribute("joueur", joueurService.findById(joueurId));
-        model.addAttribute("statistiques", statistiqueService.findByJoueur(joueurId));
-        return "statistique/joueur";
+    // GET /api/statistiques/match/{matchId}
+    @GetMapping("/match/{matchId}")
+    public ResponseEntity<?> byMatch(@PathVariable Long matchId) {
+        return ResponseEntity.ok(statistiqueService.findByMatch(matchId));
     }
 
-    // Statistiques par match
-    @GetMapping("/statistiques/match/{matchId}")
-    public String byMatch(@PathVariable Long matchId, Model model) {
-        model.addAttribute("match", matchService.findById(matchId));
-        model.addAttribute("statistiques", statistiqueService.findByMatch(matchId));
-        return "statistique/match";
-    }
-
-    // Formulaire nouvelle statistique
-    @GetMapping("/statistiques/new")
-    public String newForm(Model model) {
-        model.addAttribute("statistique", new Statistique());
-        model.addAttribute("joueurs", joueurService.findAll());
-        model.addAttribute("matchs", matchService.findAll());
-        return "statistique/form";
-    }
-
-    // Sauvegarder statistique
-    @PostMapping("/statistiques")
-    public String save(@ModelAttribute Statistique stat,
-                       @RequestParam Long joueurId,
-                       @RequestParam Long matchId,
-                       RedirectAttributes redirectAttributes) {
+    // POST /api/statistiques
+    @PostMapping
+    public ResponseEntity<?> save(@RequestBody Statistique stat,
+                                   @RequestParam Long joueurId,
+                                   @RequestParam Long matchId) {
         try {
-            statistiqueService.save(stat, joueurId, matchId);
+            return ResponseEntity.ok(statistiqueService.save(stat, joueurId, matchId));
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/statistiques/new";
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return "redirect:/statistiques/match/" + matchId;
     }
 
-    // Supprimer statistique
-    @GetMapping("/statistiques/{id}/delete")
-    public String delete(@PathVariable Long id,
-                         @RequestParam Long matchId) {
+    // DELETE /api/statistiques/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         statistiqueService.delete(id);
-        return "redirect:/statistiques/match/" + matchId;
+        return ResponseEntity.ok("Statistique supprimée");
     }
 }
