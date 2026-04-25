@@ -1,5 +1,6 @@
 package com.touroi.gestion_tournoi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,7 @@ public class Joueur {
 
     @ManyToOne
     @JoinColumn(name = "equipe_id", nullable = false)
+    @JsonIgnoreProperties({"joueurs", "groupe", "matchsDomicile", "matchsExterieur"})
     private Equipe equipe;
 
     public enum Poste {

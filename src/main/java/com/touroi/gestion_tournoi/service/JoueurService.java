@@ -1,5 +1,4 @@
 package com.touroi.gestion_tournoi.service;
-
 import com.touroi.gestion_tournoi.model.Equipe;
 import com.touroi.gestion_tournoi.model.Joueur;
 import com.touroi.gestion_tournoi.repository.JoueurRepository;

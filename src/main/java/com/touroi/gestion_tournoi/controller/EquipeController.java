@@ -56,4 +56,12 @@ public class EquipeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/equipes/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+       try {
+         return ResponseEntity.ok(equipeService.findById(id));
+       } catch (RuntimeException e) {
+         return ResponseEntity.badRequest().body(e.getMessage());
+       }
+    }
 }

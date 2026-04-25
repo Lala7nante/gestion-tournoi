@@ -29,7 +29,6 @@ public class Statistique {
     private int minutesJouees = 0;
     private String minutesButs = "";
 
-    // ✅ Fields vaovao
     private int butsEnPenalty = 0;
     private int butsSurCoupFranc = 0;
     private int dribblesReussis = 0;

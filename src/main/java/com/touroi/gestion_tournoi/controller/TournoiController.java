@@ -1,44 +1,38 @@
 package com.touroi.gestion_tournoi.controller;
-
 import com.touroi.gestion_tournoi.model.Tournoi;
 import com.touroi.gestion_tournoi.service.TournoiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/tournois")
 public class TournoiController {
-
-    @Autowired private TournoiService tournoiService;
-
-    // GET /api/tournois
+    @Autowired
+    private TournoiService tournoiService;
+    // Liste de tous les tournois
     @GetMapping
     public List<Tournoi> index() {
         return tournoiService.findAll();
     }
-
-    // GET /api/tournois/{id}
+    // Détails d'un tournoi
     @GetMapping("/{id}")
     public ResponseEntity<?> detail(@PathVariable Long id) {
         return ResponseEntity.ok(tournoiService.findById(id));
     }
-
-    // POST /api/tournois
+    // Ajouter un tournoi
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Tournoi tournoi) {
-        return ResponseEntity.ok(tournoiService.save(tournoi));
+        Tournoi savedTournoi = tournoiService.save(tournoi);
+        return ResponseEntity.ok(savedTournoi);
     }
-
-    // PUT /api/tournois/{id}
+    // Modifier un tournoi
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,
-                                     @RequestBody Tournoi tournoi) {
-        return ResponseEntity.ok(tournoiService.update(id, tournoi));
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Tournoi tournoi) {
+        Tournoi updated = tournoiService.update(id, tournoi);
+        return ResponseEntity.ok(updated);
     }
-
-    // DELETE /api/tournois/{id}
+    // Supprimer un tournoi
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {

@@ -25,6 +25,10 @@ public class ClassementService {
                 .findByGroupeIdOrderByPointsDescButsMarquesDesc(groupeId);
     }
 
+    public List<Long> findAllGroupeIds() {
+        return classementRepository.findDistinctGroupeIds();
+    }
+
     @Transactional
     public void updateClassement(MatchFootball match) {
         Long groupeId = match.getEquipeDomicile().getGroupe().getId();
@@ -50,12 +54,14 @@ public class ClassementService {
                         match.getEquipeExterieur().getId());
 
         for (MatchFootball m : matchsDom) {
-            if (m.getStatut() == MatchFootball.Statut.TERMINE) {
+            if (m.getStatut() == MatchFootball.Statut.TERMINE
+                    && m.getPhase() == MatchFootball.Phase.GROUPE) {
                 calculerStats(cDom, m, match.getEquipeDomicile().getId());
             }
         }
         for (MatchFootball m : matchsExt) {
-            if (m.getStatut() == MatchFootball.Statut.TERMINE) {
+            if (m.getStatut() == MatchFootball.Statut.TERMINE
+                    && m.getPhase() == MatchFootball.Phase.GROUPE) {
                 calculerStats(cExt, m, match.getEquipeExterieur().getId());
             }
         }
@@ -92,7 +98,39 @@ public class ClassementService {
         }
     }
 
-    // ✅ VAOVAO
+    @Transactional
+    public void recalculerDepuisMatchs(Long groupeId) {
+        List<Classement> classements = classementRepository.findByGroupeId(groupeId);
+
+        for (Classement c : classements) {
+            Long equipeId = c.getEquipe().getId();
+
+            List<MatchFootball> matchs = matchRepository
+                    .findByEquipeDomicileIdOrEquipeExterieurId(equipeId, equipeId);
+
+            for (MatchFootball m : matchs) {
+                if (m.getStatut() == MatchFootball.Statut.TERMINE
+                        && m.getPhase() == MatchFootball.Phase.GROUPE) {
+                    calculerStats(c, m, equipeId);
+                }
+            }
+
+            classementRepository.save(c);
+        }
+    }
+
+    @Transactional
+    public void resetAllByGroupe(Long groupeId) {
+        List<Classement> classements = classementRepository.findByGroupeId(groupeId);
+
+        for (Classement c : classements) {
+            resetClassement(c);
+        }
+        classementRepository.saveAll(classements);
+
+        recalculerDepuisMatchs(groupeId);
+    }
+
     public List<Equipe> getEquipesQualifiees() {
         List<Long> groupeIds = classementRepository.findDistinctGroupeIds();
         List<Equipe> qualifiees = new ArrayList<>();

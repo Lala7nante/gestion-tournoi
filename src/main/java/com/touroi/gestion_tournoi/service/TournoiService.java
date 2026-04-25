@@ -7,6 +7,7 @@ import com.touroi.gestion_tournoi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,12 +30,31 @@ public class TournoiService {
                 .orElseThrow(() -> new RuntimeException("Tournoi introuvable !"));
     }
 
-    // Créer un tournoi
+    // Créer un tournoi + génération automatique des groupes A→L
     public Tournoi save(Tournoi tournoi) {
         if (tournoi.getNbGroupes() <= 0) {
             throw new RuntimeException("Le nombre de groupes est invalide !");
         }
-        return tournoiRepository.save(tournoi);
+
+        Tournoi savedTournoi = tournoiRepository.save(tournoi);
+
+        // Création automatique des groupes
+        int nombreGroupes = Math.min(savedTournoi.getNbGroupes(), 12); // max A-L
+        List<Groupe> groupes = new ArrayList<>();
+        for (int i = 0; i < nombreGroupes; i++) {
+            Groupe g = new Groupe();
+            g.setNom((char) ('A' + i));
+            g.setTournoi(savedTournoi);
+            groupes.add(g);
+        }
+        groupeRepository.saveAll(groupes);
+
+        return savedTournoi;
+    }
+
+    // Méthode optionnelle pour sauvegarder un groupe individuellement
+    public Groupe saveGroupe(Groupe g) {
+        return groupeRepository.save(g);
     }
 
     // Modifier un tournoi

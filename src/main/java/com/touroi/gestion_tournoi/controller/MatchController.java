@@ -1,5 +1,5 @@
 package com.touroi.gestion_tournoi.controller;
-
+ 
 import com.touroi.gestion_tournoi.model.MatchFootball;
 import com.touroi.gestion_tournoi.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,54 +9,89 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+ 
 @RestController
 @RequestMapping("/api/matchs")
 public class MatchController {
-
+ 
     @Autowired private MatchService matchService;
-
-
+ 
     // GET /api/matchs
     @GetMapping
     public List<MatchFootball> findAll() {
         return matchService.findAll();
     }
-
+ 
     // POST /api/matchs
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Map<String, Object> body) {
         try {
             MatchFootball match = new MatchFootball();
+ 
             Long domId = Long.valueOf(body.get("domId").toString());
             Long extId = Long.valueOf(body.get("extId").toString());
+ 
+            if (body.get("dateMatch") != null && !body.get("dateMatch").toString().isBlank()) {
+                match.setDateMatch(LocalDate.parse(body.get("dateMatch").toString()));
+            }
+            if (body.get("lieu") != null) {
+                match.setLieu(body.get("lieu").toString());
+            }
+            if (body.get("phase") != null) {
+                match.setPhase(MatchFootball.Phase.valueOf(body.get("phase").toString()));
+            }
+            if (body.get("statut") != null) {
+                match.setStatut(MatchFootball.Statut.valueOf(body.get("statut").toString()));
+            }
+ 
             return ResponseEntity.ok(matchService.save(match, domId, extId));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    // PUT /api/matchs/{id}/score
-    @PutMapping("/{id}/score")
-    public ResponseEntity<?> enregistrerScore(@PathVariable Long id,
-                                               @RequestBody Map<String, Object> body) {
-        matchService.enregistrerScore(id,
-            toInt(body, "scoreDom"),         toInt(body, "scoreExt"),
-            toBool(body, "prolongation"),    toInt(body, "scoreProlDom"),
-            toInt(body, "scoreProlExt"),     toBool(body, "penalty"),
-            toInt(body, "scorePenDom"),      toInt(body, "scorePenExt"),
-            toInt(body, "tirsDomicile"),     toInt(body, "tirsCadresDomicile"),
-            toInt(body, "possessionDomicile"), toInt(body, "passesDomicile"),
-            toInt(body, "fautesDomicile"),   toInt(body, "cartonsJaunesDomicile"),
-            toInt(body, "cartonsRougesDomicile"), toInt(body, "cornersDomicile"),
-            toInt(body, "horsJeuDomicile"),  toInt(body, "tirsExterieur"),
-            toInt(body, "tirsCadresExterieur"), toInt(body, "possessionExterieur"),
-            toInt(body, "passesExterieur"),  toInt(body, "fautesExterieur"),
-            toInt(body, "cartonsJaunesExterieur"), toInt(body, "cartonsRougesExterieur"),
-            toInt(body, "cornersExterieur"), toInt(body, "horsJeuExterieur"));
-        return ResponseEntity.ok("Score enregistré");
+ 
+    // GET /api/matchs/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(matchService.findById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
+ 
+    // PUT /api/matchs/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                     @RequestBody Map<String, Object> body) {
+        try {
+            return ResponseEntity.ok(matchService.update(id, body));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+ 
+   // PUT /api/matchs/{id}/score
+@PutMapping("/{id}/score")
+public ResponseEntity<?> enregistrerScore(@PathVariable Long id,
+                                           @RequestBody Map<String, Object> body) {
+    matchService.enregistrerScore(id,
+        toInt(body, "scoreDom"),              toInt(body, "scoreExt"),
+        toBool(body, "prolongation"),         toInt(body, "scoreProlDom"),
+        toInt(body, "scoreProlExt"),          toBool(body, "penalty"),
+        toInt(body, "scorePenDom"),           toInt(body, "scorePenExt"),
+        toInt(body, "tirsDomicile"),          toInt(body, "tirsCadresDomicile"),
+        toInt(body, "possessionDomicile"),
+        toInt(body, "fautesDomicile"),        toInt(body, "cartonsJaunesDomicile"),
+        toInt(body, "cartonsRougesDomicile"), toInt(body, "cornersDomicile"),
+        toInt(body, "horsJeuDomicile"),       toInt(body, "tirsExterieur"),
+        toInt(body, "tirsCadresExterieur"),   toInt(body, "possessionExterieur"),
+        toInt(body, "fautesExterieur"),       toInt(body, "cartonsJaunesExterieur"),
+        toInt(body, "cartonsRougesExterieur"),toInt(body, "cornersExterieur"),
+        toInt(body, "horsJeuExterieur"));
+    return ResponseEntity.ok("Score enregistré");
+}
+ 
     // DELETE /api/matchs/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -67,7 +102,7 @@ public class MatchController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+ 
     // GET /api/matchs/tirage
     @GetMapping("/tirage")
     public Map<String, Object> tirage() {
@@ -77,7 +112,7 @@ public class MatchController {
         List<MatchFootball> demi      = matchService.findByPhase(MatchFootball.Phase.DEMI);
         List<MatchFootball> finale    = matchService.findByPhase(MatchFootball.Phase.FINALE);
         List<MatchFootball> troisieme = matchService.findByPhase(MatchFootball.Phase.TROISIEME);
-
+ 
         data.put("tirageDejaFait", !quart.isEmpty() || !round16.isEmpty());
         data.put("matchsDemi",      demi);
         data.put("matchsFinale",    finale);
@@ -87,7 +122,7 @@ public class MatchController {
             && finale.isEmpty());
         return data;
     }
-
+ 
     // POST /api/matchs/tirage
     @PostMapping("/tirage")
     public ResponseEntity<?> lancerTirage(@RequestBody(required = false) Map<String, Object> body) {
@@ -101,7 +136,7 @@ public class MatchController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+ 
     // POST /api/matchs/phase-suivante
     @PostMapping("/phase-suivante")
     public ResponseEntity<?> genererPhaseSuivante(
@@ -116,12 +151,14 @@ public class MatchController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+ 
     // Helper methods
     private int toInt(Map<String, Object> m, String k) {
         return m.containsKey(k) ? Integer.parseInt(m.get(k).toString()) : 0;
     }
+ 
     private boolean toBool(Map<String, Object> m, String k) {
         return m.containsKey(k) && Boolean.parseBoolean(m.get(k).toString());
     }
 }
+ 
