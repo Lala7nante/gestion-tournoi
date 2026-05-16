@@ -59,7 +59,7 @@ public interface StatistiqueRepository extends JpaRepository<Statistique, Long> 
              "AND m.equipeExterieur.groupe.tournoi.id = :tournoiId)")
          List<Object[]> findMeilleurClubByTournoi(Long tournoiId);
 
-       // ✅ Joueurs manana stat ihany
+       // ✅ Joueurs ayant stat
        @Query("SELECT DISTINCT s.joueur FROM Statistique s ORDER BY s.joueur.nom ASC")
        List<Joueur> findJoueursAvecStats();
 }

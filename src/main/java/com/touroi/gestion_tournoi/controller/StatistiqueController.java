@@ -23,7 +23,6 @@ public class StatistiqueController {
         data.put("tournoi",       tournoiService.findById(tournoiId));
         data.put("topButeurs",    statistiqueService.getTopButeurs(tournoiId));
         data.put("topPasseurs",   statistiqueService.getTopPasseurs(tournoiId));
-        data.put("topCartons",    statistiqueService.getTopCartons(tournoiId));
         data.put("hommesDuMatch", statistiqueService.getHommesDuMatch(tournoiId));
         data.put("meilleurClub",  statistiqueService.getMeilleurClub(tournoiId));
         data.put("joueurs",       statistiqueService.findJoueursAvecStats());

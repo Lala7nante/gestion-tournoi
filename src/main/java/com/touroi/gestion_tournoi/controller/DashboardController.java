@@ -47,7 +47,7 @@ public class DashboardController {
             var hommes     = statistiqueService.getHommesDuMatch(t.getId());
             var champions  = statistiqueService.getMeilleurClub(t.getId());
 
-            if (!topButeurs.isEmpty()) data.put("topButeur",    topButeurs.get(0));
+            if (!topButeurs.isEmpty()) data.put("topButeurs",    topButeurs.get(0));
             if (!hommes.isEmpty())     data.put("hommeTournoi", hommes.get(0));
             data.put("champions", champions);
         });

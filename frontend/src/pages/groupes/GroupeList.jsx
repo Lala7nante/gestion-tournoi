@@ -8,7 +8,7 @@ export default function GroupeList() {
   const [groupes, setGroupes] = useState([]);
   const [tournoi, setTournoi] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [modal, setModal] = useState(null); // groupeId ciblé
+  const [modal, setModal] = useState(null);
   const [form, setForm] = useState({ nom: '', ville: '', coach: '' });
   const [formError, setFormError] = useState('');
   const navigate = useNavigate();
@@ -28,21 +28,20 @@ export default function GroupeList() {
   };
 
   const fetchGroupes = async () => {
-  try {
-    const res = await api.get(`/tournois/${tournoiId}/groupes`);
-    console.log('DATA GROUPES:', res.data); 
-    const data = Array.isArray(res.data) ? res.data : res.data.content ?? [];
-    const groupesAvecEquipes = await Promise.all(
-      data.map(async (g) => {
-        const eq = await api.get(`/groupes/${g.id}/equipes`);
-        return { ...g, equipes: eq.data };
-      })
-    );
-    setGroupes(groupesAvecEquipes);
-  } catch (err) {
-    console.error('Erreur chargement groupes', err);
-  }
-};
+    try {
+      const res = await api.get(`/tournois/${tournoiId}/groupes`);
+      const data = Array.isArray(res.data) ? res.data : res.data.content ?? [];
+      const groupesAvecEquipes = await Promise.all(
+        data.map(async (g) => {
+          const eq = await api.get(`/groupes/${g.id}/equipes`);
+          return { ...g, equipes: eq.data };
+        })
+      );
+      setGroupes(groupesAvecEquipes);
+    } catch (err) {
+      console.error('Erreur chargement groupes', err);
+    }
+  };
 
   const handleAddGroupe = async () => {
     setLoading(true);
@@ -102,24 +101,50 @@ export default function GroupeList() {
   };
 
   return (
-    <div>
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: '#0a0a0f' }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/tournois')} className="text-gray-400 hover:text-cyan-400 transition">
-            <MdArrowBack className="text-2xl" />
+          <button
+            onClick={() => navigate('/tournois')}
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: '#6b7280' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(0,212,255,0.1)'; e.currentTarget.style.color = '#00d4ff'; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#6b7280'; }}
+          >
+            <MdArrowBack className="text-xl" />
           </button>
           <div>
-            <h1 className="text-4xl font-bold text-cyan-400">GROUPES</h1>
-            <p className="text-gray-400 mt-1">
-              {tournoi ? tournoi.nom : '...'} — {groupes.length} / {tournoi?.nbGroupes ?? '?'} groupes
+            <p className="text-gray-600 text-xs font-semibold tracking-widest mb-0.5">TOURNOI</p>
+            <h1
+              className="text-4xl font-bold"
+              style={{
+                background: 'linear-gradient(90deg, #00d4ff 0%, #7c3aed 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              GROUPES
+            </h1>
+            <p className="text-gray-500 mt-0.5 text-sm">
+              {tournoi ? tournoi.nom : '...'} —{' '}
+              <span className="text-cyan-400 font-semibold">{groupes.length}</span>
+              {' '}/ {tournoi?.nbGroupes ?? '?'} groupes
             </p>
           </div>
         </div>
+
         <button
           onClick={handleAddGroupe}
           disabled={loading || (tournoi && groupes.length >= tournoi.nbGroupes)}
-          className="flex items-center gap-2 font-bold px-5 py-3 rounded-lg bg-cyan-400 text-black hover:bg-cyan-300 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 font-bold px-5 py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ backgroundColor: '#00d4ff', color: '#000' }}
+          onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = '#00bfea'; }}
+          onMouseLeave={e => e.currentTarget.style.backgroundColor = '#00d4ff'}
         >
           <MdAdd className="text-xl" /> AJOUTER UN GROUPE
         </button>
@@ -130,45 +155,78 @@ export default function GroupeList() {
         {groupes.map((groupe) => (
           <div
             key={groupe.id}
-            className="rounded-xl p-6 flex flex-col gap-4 transition-all duration-200"
-            style={{ backgroundColor: '#0f1117', border: '1px solid #1e2130', borderTop: '2px solid #00d4ff' }}
+            className="rounded-2xl p-6 flex flex-col gap-4 transition-all duration-200"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.07)',
+              borderTop: '2px solid #00d4ff',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'}
           >
             {/* Header carte */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div
-                  className="flex items-center justify-center w-12 h-12 rounded-lg text-xl font-black text-black"
-                  style={{ backgroundColor: '#00d4ff' }}
+                  className="flex items-center justify-center w-12 h-12 rounded-xl text-xl font-black text-black shrink-0"
+                  style={{ backgroundColor: '#00d4ff', boxShadow: '0 0 16px rgba(0,212,255,0.3)' }}
                 >
                   {groupe.nom}
                 </div>
                 <div>
                   <h2 className="text-white font-bold text-lg">Groupe {groupe.nom}</h2>
-                  <p className="text-gray-400 text-xs">{groupe.equipes?.length ?? 0} équipe(s)</p>
+                  <p className="text-gray-500 text-xs">
+                    <span className="text-cyan-400 font-semibold">{groupe.equipes?.length ?? 0}</span> équipe(s)
+                  </p>
                 </div>
               </div>
-              <button onClick={() => handleDeleteGroupe(groupe.id)} className="text-gray-600 hover:text-red-500 transition">
-                <MdDelete className="text-xl" />
+              <button
+                onClick={() => handleDeleteGroupe(groupe.id)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition"
+                style={{ backgroundColor: 'rgba(248,113,113,0.08)', color: '#6b7280' }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.15)'; e.currentTarget.style.color = '#f87171'; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.08)'; e.currentTarget.style.color = '#6b7280'; }}
+              >
+                <MdDelete className="text-base" />
               </button>
             </div>
+
+            {/* Séparateur */}
+            <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.06)' }} />
 
             {/* Liste équipes */}
             <div className="flex flex-col gap-2">
               {groupe.equipes?.length === 0 && (
-                <p className="text-gray-600 text-sm text-center py-2">Aucune équipe</p>
+                <p className="text-gray-600 text-xs text-center py-3 italic">Aucune équipe dans ce groupe</p>
               )}
               {groupe.equipes?.map((equipe) => (
                 <div
                   key={equipe.id}
-                  className="flex items-center justify-between px-3 py-2 rounded-lg"
-                  style={{ backgroundColor: '#1a1d26' }}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl transition"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(0,212,255,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'}
                 >
-                  <div className="flex items-center gap-2">
-                    <MdGroup style={{ color: '#00d4ff' }} />
-                    <span className="text-white text-sm font-medium">{equipe.nom}</span>
-                    {equipe.ville && <span className="text-gray-500 text-xs">· {equipe.ville}</span>}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <MdGroup style={{ color: '#00d4ff', flexShrink: 0 }} />
+                    <span className="text-white text-sm font-medium truncate">{equipe.nom}</span>
+                    {equipe.ville && (
+                      <span className="text-gray-600 text-xs shrink-0">· {equipe.ville}</span>
+                    )}
                   </div>
-                  <button onClick={() => handleDeleteEquipe(equipe.id)} className="text-gray-600 hover:text-red-500 transition">
+                  <button
+                    onClick={() => handleDeleteEquipe(equipe.id)}
+                    className="w-6 h-6 rounded flex items-center justify-center transition shrink-0 ml-2"
+                    style={{ color: '#4b5563' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#4b5563'}
+                  >
                     <MdDelete className="text-base" />
                   </button>
                 </div>
@@ -178,7 +236,22 @@ export default function GroupeList() {
             {/* Bouton ajouter équipe */}
             <button
               onClick={() => openModal(groupe.id)}
-              className="flex items-center justify-center gap-2 w-full py-2 rounded-lg border border-dashed border-gray-700 text-gray-400 hover:border-cyan-400 hover:text-cyan-400 transition text-sm"
+              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl transition text-sm font-semibold"
+              style={{
+                border: '1px dashed rgba(255,255,255,0.15)',
+                color: '#4b5563',
+                backgroundColor: 'transparent',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = '#00d4ff';
+                e.currentTarget.style.color = '#00d4ff';
+                e.currentTarget.style.backgroundColor = 'rgba(0,212,255,0.05)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                e.currentTarget.style.color = '#4b5563';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
               <MdAdd /> AJOUTER UNE ÉQUIPE
             </button>
@@ -186,61 +259,104 @@ export default function GroupeList() {
         ))}
 
         {groupes.length === 0 && (
-          <div className="col-span-3 text-center text-gray-600 py-20">
-            Aucun groupe. Cliquez sur "AJOUTER UN GROUPE" pour commencer.
+          <div className="col-span-3 flex flex-col items-center justify-center py-24 gap-3">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center"
+              style={{ backgroundColor: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.15)' }}
+            >
+              <MdGroup size={32} style={{ color: '#00d4ff' }} />
+            </div>
+            <p className="text-gray-600 text-sm">Aucun groupe. Cliquez sur "AJOUTER UN GROUPE" pour commencer.</p>
           </div>
         )}
       </div>
 
       {/* Modal ajout équipe */}
       {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
-          <div className="rounded-xl p-6 w-full max-w-md" style={{ backgroundColor: '#0f1117', border: '1px solid #1e2130' }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={closeModal}
+        >
+          <div
+            className="rounded-2xl p-6 w-full max-w-md"
+            style={{
+              backgroundColor: '#0d1117',
+              border: '1px solid rgba(0,212,255,0.15)',
+              boxShadow: '0 0 40px rgba(0,212,255,0.06)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-cyan-400">NOUVELLE ÉQUIPE</h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-white transition">
-                <MdClose className="text-2xl" />
+              <h2
+                className="text-xl font-bold"
+                style={{
+                  background: 'linear-gradient(90deg, #00d4ff 0%, #7c3aed 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                NOUVELLE ÉQUIPE
+              </h2>
+              <button
+                onClick={closeModal}
+                className="w-7 h-7 rounded-lg flex items-center justify-center transition"
+                style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: '#6b7280' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                onMouseLeave={e => e.currentTarget.style.color = '#6b7280'}
+              >
+                <MdClose size={16} />
               </button>
             </div>
 
             {formError && (
-              <div className="mb-4 p-3 rounded bg-red-500/10 text-red-400 text-sm">{formError}</div>
+              <div className="mb-4 p-3 rounded-xl text-sm"
+                style={{ backgroundColor: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}>
+                {formError}
+              </div>
             )}
 
             <div className="flex flex-col gap-3">
-              <input
-                type="text"
-                placeholder="Nom de l'équipe *"
-                value={form.nom}
-                onChange={(e) => setForm({ ...form, nom: e.target.value })}
-                className="w-full px-4 py-2 rounded bg-[#1a1d26] border border-gray-700 text-white focus:border-cyan-400 outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Ville"
-                value={form.ville}
-                onChange={(e) => setForm({ ...form, ville: e.target.value })}
-                className="w-full px-4 py-2 rounded bg-[#1a1d26] border border-gray-700 text-white focus:border-cyan-400 outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Coach"
-                value={form.coach}
-                onChange={(e) => setForm({ ...form, coach: e.target.value })}
-                className="w-full px-4 py-2 rounded bg-[#1a1d26] border border-gray-700 text-white focus:border-cyan-400 outline-none"
-              />
+              {[
+                { placeholder: "Nom de l'équipe *", key: 'nom' },
+                { placeholder: 'Ville', key: 'ville' },
+                { placeholder: 'Coach', key: 'coach' },
+              ].map(({ placeholder, key }) => (
+                <input
+                  key={key}
+                  type="text"
+                  placeholder={placeholder}
+                  value={form[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl text-white text-sm outline-none transition"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.04)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    placeholder: '#4b5563',
+                  }}
+                  onFocus={e => e.currentTarget.style.borderColor = 'rgba(0,212,255,0.4)'}
+                  onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
+                />
+              ))}
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
                 onClick={closeModal}
-                className="flex-1 py-2 rounded border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition"
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold transition"
+                style={{ border: '1px solid rgba(255,255,255,0.1)', color: '#6b7280' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
               >
                 ANNULER
               </button>
               <button
                 onClick={handleAddEquipe}
-                className="flex-1 py-2 rounded bg-cyan-400 text-black font-bold hover:bg-cyan-300 transition"
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold transition"
+                style={{ backgroundColor: '#00d4ff', color: '#000' }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#00bfea'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#00d4ff'}
               >
                 CRÉER
               </button>
