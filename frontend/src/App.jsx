@@ -5,6 +5,8 @@ import TournoiList from './pages/Tournoi/TournoiList';
 import TournoiForm from './pages/Tournoi/TournoiForm';
 import EquipeList from './pages/Equipe/EquipeList';
 import EquipeForm from './pages/Equipe/EquipeForm';
+import EquipeLigueList from './pages/Equipe/EquipeLigueList';  
+import EquipeLigueForm from './pages/Equipe/EquipeLigueForm';   
 import JoueurList from './pages/Joueur/JoueurList';
 import JoueurForm from './pages/Joueur/JoueurForm';
 import MatchList from './pages/Match/MatchList';
@@ -15,7 +17,7 @@ import ClassementPage from './pages/Classement/ClassementPage';
 import StatistiquePage from './pages/Statistique/StatistiquePage';
 import GroupeList from './pages/groupes/GroupeList';
 import StatMatch from './pages/Statistique/StatMatch';
- 
+
 function SidebarIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -24,10 +26,10 @@ function SidebarIcon() {
     </svg>
   );
 }
- 
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
- 
+
   return (
     <BrowserRouter>
       <div className="flex min-h-screen" style={{ backgroundColor: '#0a0a0f' }}>
@@ -47,37 +49,55 @@ function App() {
               <SidebarIcon />
             </button>
           )}
+
           <Routes>
+            {/* ── Dashboard ── */}
             <Route path="/" element={<Dashboard />} />
+
+            {/* ── Tournois ── */}
             <Route path="/tournois" element={<TournoiList />} />
             <Route path="/tournois/new" element={<TournoiForm />} />
             <Route path="/tournois/:id/edit" element={<TournoiForm />} />
+
+            {/* ── Groupes COUPE ── */}
             <Route path="/tournois/:tournoiId/groupes" element={<GroupeList />} />
+
+            {/* ── Equipes LIGUE ── */}
+            <Route path="/tournois/:tournoiId/equipes" element={<EquipeLigueList />} />
+            <Route path="/tournois/:tournoiId/equipes/new" element={<EquipeLigueForm />} />
+
+            {/* ── Equipes globales ── */}
             <Route path="/equipes" element={<EquipeList />} />
             <Route path="/equipes/new" element={<EquipeForm />} />
             <Route path="/equipes/:id/edit" element={<EquipeForm />} />
-            {/* Routes joueurs depuis équipe */}
+
+            {/* ── Joueurs depuis équipe ── */}
             <Route path="/equipes/:equipeId/joueurs" element={<JoueurList />} />
-            <Route path="/statistiques/match/:id" element={<StatMatch />} />
             <Route path="/equipes/:equipeId/joueurs/new" element={<JoueurForm />} />
             <Route path="/equipes/:equipeId/joueurs/:id/edit" element={<JoueurForm />} />
-            {/* Routes joueurs globales */}
+
+            {/* ── Joueurs globaux ── */}
             <Route path="/joueurs" element={<JoueurList />} />
             <Route path="/joueurs/new" element={<JoueurForm />} />
             <Route path="/joueurs/:id/edit" element={<JoueurForm />} />
-            {/* Routes matchs */}
+
+            {/* ── Matchs ── */}
             <Route path="/matchs" element={<MatchList />} />
             <Route path="/matchs/new" element={<MatchForm />} />
             <Route path="/matchs/:id/edit" element={<MatchForm />} />
             <Route path="/matchs/:id/score" element={<MatchScore />} />
+
+            {/* ── Classement ── */}
             <Route path="/classement" element={<ClassementPage />} />
+
+            {/* ── Statistiques ── */}
             <Route path="/statistiques" element={<StatistiquePage />} />
+            <Route path="/statistiques/match/:id" element={<StatMatch />} />
           </Routes>
         </div>
       </div>
     </BrowserRouter>
   );
 }
- 
+
 export default App;
- 

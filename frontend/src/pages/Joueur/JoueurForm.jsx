@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MdArrowBack, MdSave } from 'react-icons/md';
 import api from '../../api/axios';
 
+// Regex : lettres (avec accents), espaces, tirets et apostrophes uniquement
+const NOM_REGEX = /[^a-zA-ZÀ-ÖØ-öø-ÿ\s'-]/g;
+
 export default function JoueurForm() {
   const { id, equipeId } = useParams();
   const navigate = useNavigate();
@@ -40,7 +43,14 @@ export default function JoueurForm() {
   }, [id, equipeId]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Filtrage des caractères spéciaux pour nom et prénom
+    if (name === 'nom' || name === 'prenom') {
+      setForm({ ...form, [name]: value.replace(NOM_REGEX, '') });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {

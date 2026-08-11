@@ -3,12 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MdArrowBack, MdSave } from 'react-icons/md';
 import api from '../../api/axios';
 
+// Regex : lettres (avec accents), espaces, tirets et apostrophes uniquement
+const NOM_REGEX = /[^a-zA-ZÀ-ÖØ-öø-ÿ\s'-]/g;
+
 export default function EquipeForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [form, setForm] = useState({ nom: '', ville: '', coach: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     api.get(`/equipes/${id}`)
@@ -17,15 +20,26 @@ export default function EquipeForm() {
   }, [id]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Filtrage des caractères spéciaux pour le champ coach
+    if (name === 'coach') {
+      setForm({ ...form, [name]: value.replace(NOM_REGEX, '') });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     try {
       await api.put(`/equipes/${id}`, form);
-      navigate('/equipes');
+      setSuccess('Équipe modifiée avec succès !');
+      setTimeout(() => {
+        navigate('/equipes');
+      }, 1200);
     } catch (err) {
       console.error(err);
       setError(err.response?.data || "Une erreur est survenue.");
@@ -48,6 +62,7 @@ export default function EquipeForm() {
       {/* Formulaire */}
       <div className="flex flex-col gap-4">
         {error && <div className="p-3 bg-red-500/10 text-red-400 rounded">{error}</div>}
+        {success && <div className="p-3 bg-green-500/10 text-green-400 rounded">{success}</div>}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Nom */}

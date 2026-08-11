@@ -28,42 +28,6 @@ export default function StatMatch() {
     fetchData();
   }, [id]);
 
-  const StatBar = ({ label, valueLeft, valueRight }) => {
-    const tot = valueLeft + valueRight || 1;
-    const pctLeft = Math.round((valueLeft / tot) * 100);
-    const pctRight = 100 - pctLeft;
-    return (
-      <div className="mb-5">
-        <div className="flex justify-between items-center text-sm font-bold mb-2">
-          <span className="text-cyan-400 w-8 text-left">{valueLeft}</span>
-          <span className="text-gray-500 text-xs uppercase tracking-widest flex-1 text-center">{label}</span>
-          <span className="text-purple-400 w-8 text-right">{valueRight}</span>
-        </div>
-        <div className="flex h-1.5 rounded-full overflow-hidden bg-gray-800">
-          <div style={{ width: `${pctLeft}%`, backgroundColor: '#22d3ee', transition: 'width 0.8s ease' }} />
-          <div style={{ width: `${pctRight}%`, backgroundColor: '#a855f7', transition: 'width 0.8s ease' }} />
-        </div>
-      </div>
-    );
-  };
-
-  const CartonBar = ({ label, valueLeft, valueRight, color }) => {
-    const tot = valueLeft + valueRight || 1;
-    return (
-      <div className="mb-4">
-        <div className="flex justify-between items-center text-sm font-bold mb-2">
-          <span style={{ color }} className="w-8 text-left">{valueLeft}</span>
-          <span className="text-gray-500 text-xs uppercase tracking-widest flex-1 text-center">{label}</span>
-          <span style={{ color }} className="w-8 text-right">{valueRight}</span>
-        </div>
-        <div className="flex h-1.5 rounded-full overflow-hidden bg-gray-800">
-          <div style={{ width: `${Math.round((valueLeft / tot) * 100)}%`, backgroundColor: color, transition: 'width 0.8s ease' }} />
-          <div style={{ width: `${Math.round((valueRight / tot) * 100)}%`, backgroundColor: color + '55', transition: 'width 0.8s ease' }} />
-        </div>
-      </div>
-    );
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -80,32 +44,10 @@ export default function StatMatch() {
   const butsDomicile = buts.filter(b => b.buteur?.equipe?.id === match.equipeDomicile?.id);
   const butsExterieur = buts.filter(b => b.buteur?.equipe?.id === match.equipeExterieur?.id);
 
-  const domStats = {
-    tirs:          match.tirsDomicile          || 0,
-    tirsCadres:    match.tirsCadresDomicile     || 0,
-    possession:    match.possessionDomicile     ?? 50,
-    fautes:        match.fautesDomicile         || 0,
-    cartonsJaunes: match.cartonsJaunesDomicile  || 0,
-    cartonsRouges: match.cartonsRougesDomicile  || 0,
-    corners:       match.cornersDomicile        || 0,
-    horsJeu:       match.horsJeuDomicile        || 0,
-  };
-
-  const extStats = {
-    tirs:          match.tirsExterieur          || 0,
-    tirsCadres:    match.tirsCadresExterieur     || 0,
-    possession:    match.possessionExterieur     ?? 50,
-    fautes:        match.fautesExterieur         || 0,
-    cartonsJaunes: match.cartonsJaunesExterieur  || 0,
-    cartonsRouges: match.cartonsRougesExterieur  || 0,
-    corners:       match.cornersExterieur        || 0,
-    horsJeu:       match.horsJeuExterieur        || 0,
-  };
-
   return (
     <div className="max-w-3xl mx-auto space-y-5">
 
-      {/* Header */}
+      {/* En-tête avec bouton retour */}
       <div className="flex items-center gap-4">
         <button onClick={() => navigate('/matchs')} className="text-gray-400 hover:text-cyan-400 transition">
           <MdArrowBack size={24} />
@@ -116,21 +58,21 @@ export default function StatMatch() {
         </div>
       </div>
 
-      {/* Score Card */}
+      {/* Carte score principal */}
       <div
         className="rounded-2xl p-8 relative overflow-hidden"
         style={{ backgroundColor: '#111827', border: '1px solid #1f2937' }}
       >
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full opacity-10 blur-3xl bg-cyan-400" />
 
-        {/* Noms + Labels alignés */}
+        {/* Noms des équipes et score */}
         <div className="flex items-center justify-center gap-6 relative mb-4">
           <div className="flex-1 text-right">
             <p className="text-white font-bold text-2xl">{match.equipeDomicile?.nom}</p>
             <p className="text-gray-600 text-xs mt-1 tracking-widest">DOMICILE</p>
           </div>
 
-          {/* Score au centre */}
+          {/* Score centré */}
           <div className="flex flex-col items-center min-w-[160px]">
             <div className="flex items-center gap-4">
               <span className="text-6xl font-bold text-white tabular-nums">{match.scoreDomicile}</span>
@@ -151,8 +93,9 @@ export default function StatMatch() {
           </div>
         </div>
 
-        {/* Buteurs en dessous, alignés sous chaque équipe */}
+        {/* Buteurs alignés sous chaque équipe */}
         <div className="flex items-start justify-center gap-6 relative">
+
           {/* Buteurs domicile — alignés à droite */}
           <div className="flex-1 flex flex-col items-end gap-1 min-w-0">
             {butsDomicile.map((b, i) => (
@@ -164,7 +107,7 @@ export default function StatMatch() {
             ))}
           </div>
 
-          {/* Espaceur centré (même largeur que le score) */}
+          {/* Espaceur centré */}
           <div className="min-w-[160px]" />
 
           {/* Buteurs extérieur — alignés à gauche */}
@@ -179,30 +122,6 @@ export default function StatMatch() {
           </div>
         </div>
 
-      </div>
-
-      {/* Comparaison */}
-      <div
-        className="rounded-2xl p-6"
-        style={{ backgroundColor: '#111827', border: '1px solid #1f2937' }}
-      >
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-cyan-400 font-bold text-sm">{match.equipeDomicile?.nom}</span>
-          <h2 className="text-gray-400 font-bold text-xs tracking-widest uppercase">Comparaison</h2>
-          <span className="text-purple-400 font-bold text-sm">{match.equipeExterieur?.nom}</span>
-        </div>
-
-        <StatBar label="TIRS"          valueLeft={domStats.tirs}          valueRight={extStats.tirs} />
-        <StatBar label="TIRS CADRÉS"   valueLeft={domStats.tirsCadres}    valueRight={extStats.tirsCadres} />
-        <StatBar label="POSSESSION %"  valueLeft={domStats.possession}    valueRight={extStats.possession} />
-        <StatBar label="FAUTES"        valueLeft={domStats.fautes}        valueRight={extStats.fautes} />
-        <StatBar label="CORNERS"       valueLeft={domStats.corners}       valueRight={extStats.corners} />
-        <StatBar label="HORS-JEU"      valueLeft={domStats.horsJeu}       valueRight={extStats.horsJeu} />
-
-        <div className="border-t border-gray-800 my-4" />
-
-        <CartonBar label="CARTONS JAUNES" valueLeft={domStats.cartonsJaunes} valueRight={extStats.cartonsJaunes} color="#facc15" />
-        <CartonBar label="CARTONS ROUGES" valueLeft={domStats.cartonsRouges} valueRight={extStats.cartonsRouges} color="#f87171" />
       </div>
 
     </div>

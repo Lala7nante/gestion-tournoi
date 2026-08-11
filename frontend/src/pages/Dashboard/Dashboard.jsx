@@ -11,7 +11,6 @@ import { HiOutlineUsers, HiOutlineCalendar, HiOutlineStar } from 'react-icons/hi
 import { RiGroupLine, RiMedalLine, RiBarChartLine } from 'react-icons/ri';
 import api from '../../api/axios';
 
-// ─── Modal Détail Match ──────────────────────────────────────────────────────
 function MatchDetailModal({ match, onClose }) {
   if (!match) return null;
 
@@ -136,7 +135,6 @@ function MatchDetailModal({ match, onClose }) {
   );
 }
 
-// ─── Mini Top 5 Widget ───────────────────────────────────────────────────────
 function MiniTopList({ title, icon, items, accentColor, accentBg, statLabel }) {
   const medals = ['🥇', '🥈', '🥉'];
   return (
@@ -192,7 +190,6 @@ function MiniTopList({ title, icon, items, accentColor, accentBg, statLabel }) {
   );
 }
 
-// ─── Dashboard ───────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -202,6 +199,10 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ topButeurs: [], topPasseurs: [] });
   const [meilleurButeur, setMeilleurButeur] = useState(null);
   const [hommeTournoi, setHommeTournoi] = useState(null);
+
+  // 👈 Spécifique LIGUE : top 3 du classement + 5 derniers matchs de CETTE ligue
+  const [topLigue, setTopLigue] = useState([]);
+  const [ligueDerniersResultats, setLigueDerniersResultats] = useState([]);
 
   useEffect(() => {
     api.get('/tournois')
@@ -218,17 +219,25 @@ export default function Dashboard() {
     setMeilleurButeur(null);
     setHommeTournoi(null);
 
+    const tournoiSelectionne = tournois.find(t => t.id == selectedTournoi);
+    const isLigue = tournoiSelectionne?.type === 'LIGUE';
+    const statsEndpoint = isLigue
+      ? `/statistiques/ligue/${selectedTournoi}`
+      : `/statistiques/tournoi/${selectedTournoi}`;
+
     Promise.all([
       api.get(`/dashboard?tournoi=${selectedTournoi}`),
-      api.get(`/statistiques/tournoi/${selectedTournoi}`),
+      api.get(statsEndpoint),
+      // 👈 Appels supplémentaires uniquement si c'est une LIGUE
+      isLigue ? api.get(`/matchs/ligue/${selectedTournoi}/classement`) : Promise.resolve({ data: [] }),
+      isLigue ? api.get(`/matchs/ligue/${selectedTournoi}`) : Promise.resolve({ data: [] }),
     ])
-      .then(([dashRes, statsRes]) => {
+      .then(([dashRes, statsRes, classementRes, matchsLigueRes]) => {
         setData(dashRes.data);
         const buteurs = statsRes.data.topButeurs || [];
         const passeurs = statsRes.data.topPasseurs || [];
         setStats({ topButeurs: buteurs, topPasseurs: passeurs });
 
-        // ✅ Meilleur Buteur = 1er du topButeurs
         if (buteurs.length > 0) {
           const joueur = buteurs[0][0];
           const total = buteurs[0][1];
@@ -239,7 +248,6 @@ export default function Dashboard() {
           });
         }
 
-        // ✅ Homme du Tournoi = 1er du topPasseurs
         if (passeurs.length > 0) {
           const joueur = passeurs[0][0];
           const total = passeurs[0][1];
@@ -249,10 +257,26 @@ export default function Dashboard() {
             equipe: joueur.equipe?.nom,
           });
         }
+
+        // 👈 Traitement spécifique LIGUE : top 3 classement + 5 derniers matchs
+        if (isLigue) {
+          const classement = Array.isArray(classementRes.data) ? classementRes.data : [];
+          setTopLigue(classement.slice(0, 3));
+
+          const matchsLigue = Array.isArray(matchsLigueRes.data) ? matchsLigueRes.data : [];
+          const derniers = matchsLigue
+            .filter(m => m.statut === 'TERMINE')
+            .sort((a, b) => new Date(b.dateMatch) - new Date(a.dateMatch))
+            .slice(0, 5);
+          setLigueDerniersResultats(derniers);
+        } else {
+          setTopLigue([]);
+          setLigueDerniersResultats([]);
+        }
       })
       .catch(err => console.error('Erreur dashboard', err))
       .finally(() => setLoading(false));
-  }, [selectedTournoi]);
+  }, [selectedTournoi, tournois]);
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
@@ -262,6 +286,12 @@ export default function Dashboard() {
       </div>
     </div>
   );
+
+  // 👈 Détermine si le tournoi sélectionné est une LIGUE (pour l'affichage)
+  const tournoiActuel = tournois.find(t => t.id == selectedTournoi);
+  const isLigue = tournoiActuel?.type === 'LIGUE';
+
+  const derniersResultatsAffiches = isLigue ? ligueDerniersResultats : data?.derniersResultats;
 
   const statCards = [
     {
@@ -294,7 +324,6 @@ export default function Dashboard() {
 
       <div className="space-y-5">
 
-        {/* Header */}
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
             <p className="text-gray-600 text-xs font-semibold tracking-widest mb-1">VUE D'ENSEMBLE</p>
@@ -333,15 +362,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Section 1 : Highlights */}
         <div>
           <p className="text-gray-600 text-xs font-bold tracking-widest mb-3 flex items-center gap-2">
             <RiMedalLine size={13} />
-            MEILLEUR BUTEUR / HOMME DU TOURNOI / CHAMPIONS
+            {isLigue ? 'MEILLEUR BUTEUR / HOMME DU TOURNOI / TOP 3 LIGUE' : 'MEILLEUR BUTEUR / HOMME DU TOURNOI / CHAMPIONS'}
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
 
-            {/* Meilleur Buteur */}
             <div
               className="rounded-2xl p-4 relative overflow-hidden"
               style={{ backgroundColor: '#0d1117', border: '1px solid rgba(245,158,11,0.15)' }}
@@ -374,7 +401,6 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Homme du Tournoi */}
             <div
               className="rounded-2xl p-4 relative overflow-hidden"
               style={{ backgroundColor: '#0d1117', border: '1px solid rgba(0,212,255,0.15)' }}
@@ -407,7 +433,7 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Champions */}
+            {/* 👈 Carte CHAMPIONS (Coupe) OU TOP 3 LIGUE (Ligue) selon le type de tournoi */}
             <div
               className="rounded-2xl p-4 relative overflow-hidden"
               style={{ backgroundColor: '#0d1117', border: '1px solid rgba(245,158,11,0.15)' }}
@@ -415,30 +441,51 @@ export default function Dashboard() {
               <div className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full opacity-15 blur-2xl" style={{ backgroundColor: '#f59e0b' }} />
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'rgba(245,158,11,0.12)' }}>
-                  <IoTrophyOutline size={14} style={{ color: '#f59e0b' }} />
+                  {isLigue ? <MdLeaderboard size={14} style={{ color: '#f59e0b' }} /> : <IoTrophyOutline size={14} style={{ color: '#f59e0b' }} />}
                 </div>
-                <h3 className="text-gray-500 font-bold text-xs tracking-widest">CHAMPIONS</h3>
+                <h3 className="text-gray-500 font-bold text-xs tracking-widest">
+                  {isLigue ? 'TOP 3 LIGUE' : 'CHAMPIONS'}
+                </h3>
               </div>
-              {data?.champions?.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  {data.champions.map((c, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-gray-400 text-xs">{c[0]}</span>
-                      <span className="text-white font-bold text-sm">{c[1]}</span>
-                    </div>
-                  ))}
-                </div>
+
+              {isLigue ? (
+                topLigue.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    {topLigue.map((row, i) => (
+                      <div key={row.equipeId ?? i} className="flex items-center justify-between gap-2">
+                        <span className="text-gray-400 text-xs truncate">
+                          {i + 1}. {row.equipeNom}
+                        </span>
+                        <span className="text-white font-bold text-sm shrink-0">{row.pts} pts</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-gray-700 text-xs">
+                    <MdLeaderboard size={16} /> Aucune donnée
+                  </div>
+                )
               ) : (
-                <div className="flex items-center gap-2 text-gray-700 text-xs">
-                  <MdLeaderboard size={16} /> Aucune donnée
-                </div>
+                data?.champions?.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    {data.champions.map((c, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <span className="text-gray-400 text-xs">{c[0]}</span>
+                        <span className="text-white font-bold text-sm">{c[1]}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-gray-700 text-xs">
+                    <MdLeaderboard size={16} /> Aucune donnée
+                  </div>
+                )
               )}
             </div>
 
           </div>
         </div>
 
-        {/* Section 2 : Top 5 Buteurs & Passeurs */}
         <div>
           <p className="text-gray-600 text-xs font-bold tracking-widest mb-3 flex items-center gap-2">
             <MdTrendingUp size={13} />
@@ -464,7 +511,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Section 3 : Matchs */}
         <div>
           <p className="text-gray-600 text-xs font-bold tracking-widest mb-3 flex items-center gap-2">
             <IoFootballOutline size={13} />
@@ -472,7 +518,6 @@ export default function Dashboard() {
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            {/* Derniers résultats */}
             <div
               className="rounded-2xl p-5"
               style={{ backgroundColor: '#0d1117', border: '1px solid rgba(16,185,129,0.15)' }}
@@ -483,9 +528,9 @@ export default function Dashboard() {
                 </div>
                 <span className="text-gray-400 font-bold text-xs tracking-widest">DERNIERS RESULTATS</span>
               </div>
-              {data?.derniersResultats?.length > 0 ? (
+              {derniersResultatsAffiches?.length > 0 ? (
                 <div className="flex flex-col gap-1">
-                  {data.derniersResultats.map((m) => (
+                  {derniersResultatsAffiches.map((m) => (
                     <div
                       key={m.id}
                       className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition group"
@@ -518,7 +563,6 @@ export default function Dashboard() {
               )}
             </div>
 
-            {/* Prochains matchs */}
             <div
               className="rounded-2xl p-5"
               style={{ backgroundColor: '#0d1117', border: '1px solid rgba(0,212,255,0.15)' }}
@@ -566,7 +610,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Section 4 : Stat Cards */}
         <div>
           <p className="text-gray-600 text-xs font-bold tracking-widest mb-3 flex items-center gap-2">
             <TbTournament size={13} />

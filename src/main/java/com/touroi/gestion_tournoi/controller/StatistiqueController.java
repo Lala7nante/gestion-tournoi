@@ -13,10 +13,9 @@ import java.util.Map;
 public class StatistiqueController {
 
     @Autowired private StatistiqueService statistiqueService;
-
     @Autowired private TournoiService tournoiService;
 
-    // GET /api/statistiques/tournoi/{tournoiId}
+    // Statistiques d'un tournoi (coupe) par ID
     @GetMapping("/tournoi/{tournoiId}")
     public Map<String, Object> byTournoi(@PathVariable Long tournoiId) {
         Map<String, Object> data = new HashMap<>();
@@ -29,19 +28,28 @@ public class StatistiqueController {
         return data;
     }
 
-    // GET /api/statistiques/joueur/{joueurId}
+    // Statistiques d'une ligue par ID (sans groupe, query directe via match.tournoi)
+    @GetMapping("/ligue/{ligueId}")
+    public Map<String, Object> byLigue(@PathVariable Long ligueId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("topButeurs",  statistiqueService.getTopButeursLigue(ligueId));
+        data.put("topPasseurs", statistiqueService.getTopPasseursLigue(ligueId));
+        return data;
+    }
+
+    // Statistiques d'un joueur par ID
     @GetMapping("/joueur/{joueurId}")
     public ResponseEntity<?> byJoueur(@PathVariable Long joueurId) {
         return ResponseEntity.ok(statistiqueService.findByJoueur(joueurId));
     }
 
-    // GET /api/statistiques/match/{matchId}
+    // Statistiques d'un match par ID
     @GetMapping("/match/{matchId}")
     public ResponseEntity<?> byMatch(@PathVariable Long matchId) {
         return ResponseEntity.ok(statistiqueService.findByMatch(matchId));
     }
 
-    // POST /api/statistiques
+    // Enregistrer une nouvelle statistique
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Statistique stat,
                                    @RequestParam Long joueurId,
@@ -53,7 +61,7 @@ public class StatistiqueController {
         }
     }
 
-    // DELETE /api/statistiques/{id}
+    // Supprimer une statistique par ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         statistiqueService.delete(id);

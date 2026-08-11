@@ -6,9 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EquipeRepository 
-    extends JpaRepository<Equipe, Long> {
-    
+public interface EquipeRepository extends JpaRepository<Equipe, Long> {
     List<Equipe> findByGroupeId(Long groupeId);
+    List<Equipe> findByTournoiId(Long tournoiId); 
     int countByGroupeId(Long groupeId);
 }

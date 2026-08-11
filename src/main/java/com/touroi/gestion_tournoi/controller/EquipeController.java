@@ -12,24 +12,52 @@ import java.util.List;
 public class EquipeController {
 
     @Autowired private EquipeService equipeService;
+
     // GET /api/equipes
     @GetMapping("/equipes")
     public List<Equipe> findAll() {
         return equipeService.findAll();
     }
 
-    // GET /api/groupes/{groupeId}/equipes
+    // GET /api/equipes/{id}
+    @GetMapping("/equipes/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(equipeService.findById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // GET /api/groupes/{groupeId}/equipes — COUPE
     @GetMapping("/groupes/{groupeId}/equipes")
     public List<Equipe> findByGroupe(@PathVariable Long groupeId) {
         return equipeService.findByGroupe(groupeId);
     }
 
-    // POST /api/groupes/{groupeId}/equipes
+    // GET /api/tournois/{tournoiId}/equipes — LIGUE
+    @GetMapping("/tournois/{tournoiId}/equipes")
+    public List<Equipe> findByTournoi(@PathVariable Long tournoiId) {
+        return equipeService.findByTournoi(tournoiId);
+    }
+
+    // POST /api/groupes/{groupeId}/equipes — COUPE
     @PostMapping("/groupes/{groupeId}/equipes")
-    public ResponseEntity<?> save(@PathVariable Long groupeId,
-                                   @RequestBody Equipe equipe) {
+    public ResponseEntity<?> saveInCoupe(@PathVariable Long groupeId,
+                                          @RequestBody Equipe equipe) {
         try {
-            return ResponseEntity.ok(equipeService.save(equipe, groupeId));
+            return ResponseEntity.ok(equipeService.saveInCoupe(equipe, groupeId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // POST /api/tournois/{tournoiId}/equipes — LIGUE
+    @PostMapping("/tournois/{tournoiId}/equipes")
+    public ResponseEntity<?> saveInLigue(@PathVariable Long tournoiId,
+                                          @RequestBody Equipe equipe) {
+        try {
+            return ResponseEntity.ok(equipeService.saveInLigue(equipe, tournoiId));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -55,13 +83,5 @@ public class EquipeController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-    @GetMapping("/equipes/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-       try {
-         return ResponseEntity.ok(equipeService.findById(id));
-       } catch (RuntimeException e) {
-         return ResponseEntity.badRequest().body(e.getMessage());
-       }
     }
 }
